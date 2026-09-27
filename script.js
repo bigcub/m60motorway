@@ -34,8 +34,8 @@
 
   /* ---------- state ---------- */
   const prefs = store.get('m60.prefs', {});
-  const S = { sel: 1, dir: prefs.dir === 'acw' ? 'acw' : 'cw', nums: prefs.nums !== false, spot: null, driving: false };
-  const savePrefs = () => store.set('m60.prefs', { dir: S.dir, nums: S.nums });
+  const S = { sel: 1, dir: prefs.dir === 'acw' ? 'acw' : 'cw', spot: null, driving: false, tab: 'junction', panelHidden: false };
+  const savePrefs = () => store.set('m60.prefs', { dir: S.dir });
 
   /* ---------- geometry ---------- */
   const VB0 = { x: GEO.vb[0], y: GEO.vb[1], w: GEO.vb[2], h: GEO.vb[3] };
@@ -76,6 +76,7 @@
   /* ---------- build the map ---------- */
   const svg = $('#map');
   let view = { ...VB0 };
+  let FIT = { ...VB0 };
 
   const defs = el('defs', {}, svg);
   const fade = el('radialGradient', { id: 'spurFade', gradientUnits: 'userSpaceOnUse', cx: CTR.x, cy: CTR.y, r: GEO.clip }, defs);
@@ -165,7 +166,7 @@
     el('circle', { class: 'face', r: 10.5 }, g);
     j.txt = el('text', { x: 0, y: 0.5 }, g);
     j.g = g;
-    g.addEventListener('click', () => { if (!dragMoved) { stopDrive(); select(j.n); } });
+    g.addEventListener('click', () => { if (!dragMoved) pick(j.n, false); });
     g.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') showTip(j); });
     g.addEventListener('pointerleave', hideTip);
   });
@@ -219,9 +220,9 @@
 
     // road tags, kept inside the view
     for (const t of tags) {
-      const pad = 34 * k;
-      t.px = Math.min(Math.max(t.x, view.x + pad), view.x + view.w - pad);
-      t.py = Math.min(Math.max(t.y, view.y + pad * 0.6), view.y + view.h - pad * 1.4);
+      const pad = 34 * k, vis = visibleRect();
+      t.px = Math.min(Math.max(t.x, vis.x + pad), vis.x + vis.w - pad);
+      t.py = Math.min(Math.max(t.y, vis.y + pad * 0.6), vis.y + vis.h - pad * 1.4);
       place(t.g, t.px, t.py, k);
       // on a small map a tag can land on the tokens; leave it out rather than cover a number
       t.g.style.display = J.some((j) => Math.abs(j.bx - t.px) < 32 * k && Math.abs(j.by - (t.py + 7 * k)) < 26 * k) ? 'none' : '';
@@ -303,13 +304,13 @@
         <div><dt>Next ${dirWord === 'clockwise' ? '↻' : '↺'}</dt><dd>J${nx} <small>in ${milesBetween(j.n, nx, S.dir).toFixed(1)} mi</small></dd></div>
         <div><dt>Exits</dt><dd class="exits">${exit(!!j.cw, 'cw')}${exit(!!j.acw, 'acw')}</dd></div>
       </dl>
-      <p class="hook">${esc(j.hook)}</p>
+      <p class="note">${esc(j.note)}</p>
       <div class="step">
         <button type="button" id="prev" aria-label="Previous junction, ${pv}">${icon.left}<span class="n">J${pv}</span></button>
         <button type="button" id="next" aria-label="Next junction, ${nx}"><span class="n">J${nx}</span>${icon.right}</button>
       </div>`;
-    $('#prev').onclick = () => { stopDrive(); select(pv, true); };
-    $('#next').onclick = () => { stopDrive(); select(nx, true); };
+    $('#prev').onclick = () => pick(pv);
+    $('#next').onclick = () => pick(nx);
   }
 
   function renderList() {
@@ -324,35 +325,34 @@
           </button>`).join('')}
       </div>`).join('');
     document.querySelectorAll('.jrow').forEach((b) => {
-      b.onclick = () => { stopDrive(); select(+b.dataset.n, true); revealMap(); };
+      b.onclick = () => pick(+b.dataset.n);
     });
   }
 
-  function renderHooks() {
-    $('#hooks').innerHTML = window.HOOKS.map((h, i) => `
-      <button type="button" class="hook-card tone-${h.tone}" data-i="${i}" aria-pressed="false">
+  function renderOddities() {
+    $('#oddities').innerHTML = window.ODDITIES.map((h, i) => `
+      <button type="button" class="odd-card tone-${h.tone}" data-i="${i}" aria-pressed="false">
         <span class="fig">${esc(h.figure)}</span>
         <span class="t">${esc(h.title)}</span>
         <span class="x">${esc(h.text)}</span>
       </button>`).join('');
-    document.querySelectorAll('.hook-card').forEach((b) => {
+    document.querySelectorAll('.odd-card').forEach((b) => {
       b.onclick = () => {
         const i = +b.dataset.i;
         S.spot = S.spot === i ? null : i;
-        document.querySelectorAll('.hook-card').forEach((c) => c.setAttribute('aria-pressed', String(+c.dataset.i === S.spot)));
+        document.querySelectorAll('.odd-card').forEach((c) => c.setAttribute('aria-pressed', String(+c.dataset.i === S.spot)));
         renderMap();
-        if (S.spot !== null) revealMap();
       };
     });
   }
 
   function renderMap() {
-    const spot = S.spot === null ? null : new Set(window.HOOKS[S.spot].js);
+    const spot = S.spot === null ? null : new Set(window.ODDITIES[S.spot].js);
     J.forEach((j) => {
       const on = j.n === S.sel;
       j.g.classList.toggle('sel', on);
       j.g.classList.toggle('spot', !!spot && spot.has(j.n));
-      j.txt.textContent = S.nums || on || (spot && spot.has(j.n)) ? j.n : '';
+      j.txt.textContent = j.n;
       j.dot.classList.toggle('on', on);
     });
     const nx = nextOf(S.sel, S.dir);
@@ -365,7 +365,6 @@
     document.querySelectorAll('.jrow').forEach((b) => b.setAttribute('aria-current', String(+b.dataset.n === S.sel)));
     $('#d-cw').setAttribute('aria-pressed', String(S.dir === 'cw'));
     $('#d-acw').setAttribute('aria-pressed', String(S.dir === 'acw'));
-    $('#nums').setAttribute('aria-pressed', String(S.nums));
     queueLayout();
   }
 
@@ -377,26 +376,49 @@
     if (reveal) ensureVisible(J[n - 1]);
   }
   function setDir(d) { S.dir = d; savePrefs(); render(); }
-  function setNums(v) { S.nums = v; savePrefs(); render(); }
-  // on narrow screens the map scrolls away; bring it back when the list or a hook changes it
-  function revealMap() {
-    const r = $('#mapwrap').getBoundingClientRect();
-    if (r.bottom < 80 || r.top > innerHeight - 80) $('#mapwrap').scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' });
+  // a junction chosen by the reader: stop any drive and show its details
+  function pick(n, reveal = true) {
+    stopDrive();
+    select(n, reveal);
+    if (S.tab !== 'junction') setTab('junction');
   }
+
+  /* ---------- panel ---------- */
+  const TABS = ['junction', 'odd', 'list', 'about'];
+  function setTab(name) {
+    S.tab = name;
+    TABS.forEach((t) => {
+      $('#tab-' + t).setAttribute('aria-selected', String(t === name));
+      $('#pane-' + t).hidden = t !== name;
+    });
+    $('.panes').scrollTop = 0;
+    if (S.panelHidden) setPanel(true);
+  }
+  TABS.forEach((t) => { $('#tab-' + t).onclick = () => setTab(t); });
+
+  function setPanel(show) {
+    S.panelHidden = !show;
+    $('#stage').classList.toggle('panel-hidden', !show);
+    $('#show-panel').hidden = show;
+    const label = show ? 'Hide the panel' : 'Show the panel';
+    $('#hide-panel').setAttribute('aria-label', label);
+    $('#hide-panel').title = label;
+    refit(true);
+  }
+  $('#hide-panel').onclick = () => setPanel(S.panelHidden);
+  $('#show-panel').onclick = () => setPanel(true);
 
   $('#d-cw').onclick = () => setDir('cw');
   $('#d-acw').onclick = () => setDir('acw');
-  $('#nums').onclick = () => setNums(!S.nums);
   $('#theme').onclick = () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
     document.documentElement.dataset.theme = next;
     try { localStorage.setItem('theme', next); } catch (e) { /* storage unavailable */ }
   };
   document.addEventListener('keydown', (e) => {
-    if (e.target.closest('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey) return;
-    if (e.key === 'ArrowRight') { e.preventDefault(); stopDrive(); select(nextOf(S.sel, S.dir), true); }
-    else if (e.key === 'ArrowLeft') { e.preventDefault(); stopDrive(); select(nextOf(S.sel, other(S.dir)), true); }
-    else if (e.key === 'n' || e.key === 'N') setNums(!S.nums);
+    if (e.target.closest?.('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); pick(nextOf(S.sel, S.dir)); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); pick(nextOf(S.sel, other(S.dir))); }
     else if (e.key === 'd' || e.key === 'D') setDir(other(S.dir));
   });
 
@@ -405,8 +427,7 @@
   function showTip(j) {
     const wrap = $('#mapwrap').getBoundingClientRect(), r = svg.getBoundingClientRect(), k = unitsPerPx();
     const offX = (r.width - view.w / k) / 2, offY = (r.height - view.h / k) / 2;
-    const known = S.nums || j.n === S.sel;
-    tip.innerHTML = `<b>${known ? 'J' + j.n : 'Junction'}</b> ${esc(j.loc)} <span>· ${roadsOf(j).join(', ')}</span>`;
+    tip.innerHTML = `<b>J${j.n}</b> ${esc(j.loc)} <span>· ${roadsOf(j).join(', ')}</span>`;
     tip.style.left = r.left - wrap.left + offX + (j.bx - view.x) / k + 'px';
     tip.style.top = r.top - wrap.top + offY + (j.by - view.y) / k + 'px';
     tip.hidden = false;
@@ -414,12 +435,43 @@
   function hideTip() { tip.hidden = true; }
 
   /* ---------- pan and zoom ---------- */
-  const MIN_W = VB0.w / 7;
-  const full = () => view.w >= VB0.w * 0.999;
+  // The map fills the window. The ring is fitted into the part the panel leaves
+  // free, and the view always keeps the window's aspect ratio.
+  const narrow = () => matchMedia('(max-width: 720px)').matches;
+  function insets() {
+    const panel = $('#panel');
+    if (narrow()) return { r: 0, t: 52, b: S.panelHidden ? 58 : panel.offsetHeight };
+    return { r: S.panelHidden ? 0 : panel.offsetWidth + 32, t: 0, b: 0 };
+  }
+  function fitView() {
+    const W = svg.clientWidth || 1, H = svg.clientHeight || 1, ins = insets();
+    // phones get a tighter frame so the ring is as large as it can be
+    const m = narrow() ? 70 : 0;
+    const box = { x: VB0.x + m, y: VB0.y + m, w: VB0.w - 2 * m, h: VB0.h - 2 * m };
+    const A = Math.max(W - ins.r, 100), B = Math.max(H - ins.t - ins.b, 100);
+    const k = Math.max(box.w / A, box.h / B);
+    return { x: box.x + box.w / 2 - (A / 2) * k, y: box.y + box.h / 2 - (ins.t + B / 2) * k, w: W * k, h: H * k };
+  }
+  // the part of the view not covered by the panel, in map units
+  function visibleRect() {
+    const k = unitsPerPx(), ins = insets(), W = svg.clientWidth, H = svg.clientHeight;
+    return { x: view.x, y: view.y + ins.t * k, w: (W - ins.r) * k, h: (H - ins.t - ins.b) * k };
+  }
+  const full = () => view.w >= FIT.w * 0.999;
+  function refit(animate) {
+    const wasFull = full();
+    FIT = fitView();
+    if (wasFull) { if (animate) animateTo({ ...FIT }); else { view = { ...FIT }; applyView(); } return; }
+    // keep the centre and scale, and match the new aspect ratio
+    const W = svg.clientWidth || 1, H = svg.clientHeight || 1, cx = view.x + view.w / 2, cy = view.y + view.h / 2;
+    view.h = (view.w * H) / W; view.x = cx - view.w / 2; view.y = cy - view.h / 2;
+    applyView();
+  }
   function clampView() {
-    if (full()) { view = { ...VB0 }; return; }
-    if (view.w < MIN_W) {
-      const f = MIN_W / view.w, cx = view.x + view.w / 2, cy = view.y + view.h / 2;
+    if (full()) { view = { ...FIT }; return; }
+    const minW = FIT.w / 7;
+    if (view.w < minW) {
+      const f = minW / view.w, cx = view.x + view.w / 2, cy = view.y + view.h / 2;
       view.w *= f; view.h *= f; view.x = cx - view.w / 2; view.y = cy - view.h / 2;
     }
     const cx = Math.min(Math.max(view.x + view.w / 2, VB0.x), VB0.x + VB0.w);
@@ -429,7 +481,6 @@
   function applyView() {
     clampView();
     svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
-    svg.style.touchAction = full() ? 'pan-y' : 'none';
     hideTip();
     queueLayout();
   }
@@ -439,7 +490,7 @@
     return { x: view.x + (cx - r.left - offX) * k, y: view.y + (cy - r.top - offY) * k };
   }
   function zoomAt(p, f) {
-    const nw = Math.min(Math.max(view.w * f, MIN_W), VB0.w);
+    const nw = Math.min(Math.max(view.w * f, FIT.w / 7), FIT.w);
     f = nw / view.w;
     view = { x: p.x - (p.x - view.x) * f, y: p.y - (p.y - view.y) * f, w: view.w * f, h: view.h * f };
     applyView();
@@ -455,20 +506,22 @@
     };
     requestAnimationFrame(step);
   }
+  // zoom about the middle of the visible part of the map
   function zoomBy(f) {
-    const c = { x: view.x + view.w / 2, y: view.y + view.h / 2 };
-    const nw = Math.min(Math.max(view.w * f, MIN_W), VB0.w), nh = (nw * VB0.h) / VB0.w;
-    animateTo({ x: c.x - nw / 2, y: c.y - nh / 2, w: nw, h: nh });
+    const v = visibleRect(), c = { x: v.x + v.w / 2, y: v.y + v.h / 2 };
+    const nw = Math.min(Math.max(view.w * f, FIT.w / 7), FIT.w), g = nw / view.w;
+    if (nw >= FIT.w * 0.999) { animateTo({ ...FIT }); return; }
+    animateTo({ x: c.x - (c.x - view.x) * g, y: c.y - (c.y - view.y) * g, w: nw, h: view.h * g });
   }
   function ensureVisible(j) {
     if (full()) return;
-    const m = view.w * 0.12;
-    if (j.x > view.x + m && j.x < view.x + view.w - m && j.y > view.y + m && j.y < view.y + view.h - m) return;
-    animateTo({ x: j.x - view.w / 2, y: j.y - view.h / 2, w: view.w, h: view.h });
+    const v = visibleRect(), m = v.w * 0.12;
+    if (j.x > v.x + m && j.x < v.x + v.w - m && j.y > v.y + m && j.y < v.y + v.h - m) return;
+    animateTo({ x: view.x + (j.x - (v.x + v.w / 2)), y: view.y + (j.y - (v.y + v.h / 2)), w: view.w, h: view.h });
   }
   $('#zin').onclick = () => zoomBy(0.6);
   $('#zout').onclick = () => zoomBy(1 / 0.6);
-  $('#zfit').onclick = () => animateTo({ ...VB0 });
+  $('#zfit').onclick = () => animateTo({ ...FIT });
 
   svg.addEventListener('wheel', (e) => {
     e.preventDefault();
@@ -478,7 +531,7 @@
   }, { passive: false });
   svg.addEventListener('dblclick', (e) => {
     if (e.target.closest('.token')) return;
-    const p = toSvg(e.clientX, e.clientY), nw = Math.max(view.w * 0.55, MIN_W), f = nw / view.w;
+    const p = toSvg(e.clientX, e.clientY), nw = Math.max(view.w * 0.55, FIT.w / 7), f = nw / view.w;
     animateTo({ x: p.x - (p.x - view.x) * f, y: p.y - (p.y - view.y) * f, w: nw, h: view.h * f });
   });
 
@@ -503,7 +556,6 @@
     } else if (drag) {
       const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
       if (!dragMoved && Math.hypot(dx, dy) > 5) {
-        if (full()) { drag = null; return; }
         dragMoved = true;
         svg.classList.add('dragging');
         try { svg.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
@@ -523,7 +575,7 @@
   svg.addEventListener('pointerup', endPointer);
   svg.addEventListener('pointercancel', endPointer);
   svg.addEventListener('click', (e) => { if (dragMoved) e.stopPropagation(); }, true);
-  new ResizeObserver(() => applyView()).observe(svg);
+  new ResizeObserver(() => refit(false)).observe(svg);
 
   /* ---------- drive the loop ---------- */
   let carS = 0, lastT = 0, raf = 0;
@@ -534,6 +586,7 @@
     place(car, p.x, p.y, K);
   }
   function startDrive() {
+    if (S.tab !== 'junction') setTab('junction');
     S.driving = true; carS = J[S.sel - 1].s; lastT = 0;
     $('#drive').setAttribute('aria-pressed', 'true');
     $('#drive-label').textContent = 'Stop';
@@ -573,8 +626,10 @@
   /* ---------- start ---------- */
   const hash = /^#j(\d{1,2})$/.exec(location.hash);
   if (hash && +hash[1] >= 1 && +hash[1] <= N) S.sel = +hash[1];
-  renderHooks();
+  renderOddities();
   renderList();
+  FIT = fitView();
+  view = { ...FIT };
   applyView();
   render();
 })();

@@ -1,10 +1,10 @@
 # m60motorway.com
 
-A map of the M60, Manchester's orbital motorway, for learning its junctions. All
-27 are numbered on a map drawn from OpenStreetMap. Each one shows where the exit
-signs send you in both directions, how far it is to the next junction, and a
-note to help it stick. There are also memory hooks that light up groups of
-junctions, an index of the whole ring, and a short history of the road.
+A map of the M60, Manchester's orbital motorway. All 27 junctions are numbered
+on a full-window map drawn from OpenStreetMap. A floating panel shows where each
+junction's exit signs send you in both directions and how far it is to the next
+one, alongside junctions of interest (half junctions, the M62 overlap and other
+quirks), an index of the whole ring, and a short history of the road.
 
 It is a small static site with no build step for the page itself.
 
@@ -22,8 +22,8 @@ Then open <http://localhost:8765>.
 | --- | --- |
 | `index.html` | The page. |
 | `styles.css` | The visual system, both themes and the responsive layout. |
-| `script.js` | The map, pan and zoom, junction detail, list and memory hooks. |
-| `data/junctions.js` | Junction content: places, sign destinations, notes, stretches and memory hooks. Edit this to change the words. |
+| `script.js` | The map, pan and zoom, the panel and its tabs, and Drive the loop. |
+| `data/junctions.js` | Junction content: places, sign destinations, notes, stretches and junctions of interest. Edit this to change the words. |
 | `data/geo.js` | Generated map geometry. Do not edit by hand. |
 | `scripts/fetch_osm.sh` | Refreshes the OpenStreetMap extracts in `scripts/osm/`. |
 | `scripts/build_geo.py` | Turns the extracts into `data/geo.js`. |
