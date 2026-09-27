@@ -3,7 +3,7 @@
 A map of the M60, Manchester's orbital motorway. All 27 junctions are numbered
 on a full-window map drawn from OpenStreetMap. A floating panel lists the ring
 stretch by stretch. Open a junction to see where its exit signs send you in each
-direction and how far it is to the next one. About covers the road's quirks, such
+direction and how far it is to the next one. About has a "Good to know" section on the road's quirks, such
 as half junctions and the M62 overlap, and its history.
 
 It is a small static site with no build step for the page itself.

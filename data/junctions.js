@@ -95,7 +95,7 @@ window.STRETCHES = [
   { name: 'Denton back to Stockport', a: 24, b: 27 },
 ];
 
-// Quirks, shown under About. `js` are the junctions each one is about.
+// "Good to know", shown under About. `js` are the junctions each one is about.
 window.QUIRKS = [
   { title: 'Turn off to stay on', js: [18], text: 'At Simister Island the through lanes carry on as the M62. To stay on the M60 you leave by the slip road and loop round the interchange.' },
   { title: 'Two motorways, one road', js: [12, 18], text: 'From Eccles to Simister the M60 and the M62 share the same carriageways. The junction numbers you see are the M60\'s.' },
