@@ -283,14 +283,6 @@
   const chipsHTML = (road) => road.split(' ').map((t) => `<span class="chip${/^\(?M\d|\(M\)/.test(t) ? ' m' : ''}">${esc(t)}</span>`).join('');
   const dirWord = (d = S.dir) => (d === 'cw' ? 'clockwise' : 'anticlockwise');
 
-  // the short line under a junction in the list: its quirk, or that it only has an exit one way
-  function tagOf(j) {
-    if (j.tag) return j.tag;
-    if (!j.cw) return 'Exit anticlockwise only';
-    if (!j.acw) return 'Exit clockwise only';
-    return '';
-  }
-
   // an opened junction: where the signs send you, how far to the next one, and a note
   function detailHTML(j) {
     const rows = j[S.dir], nx = nextOf(j.n, S.dir), w = dirWord();
@@ -315,18 +307,14 @@
   function renderList() {
     $('#list').innerHTML = window.STRETCHES.map((st) => `
       <section class="stretch">
-        <div class="stretch-head">
-          <p class="eyebrow"><span>${esc(st.side)}</span><span>J${st.a} – J${st.b}</span></p>
-          <h2>${esc(st.name)}</h2>
-          <p class="stretch-note">${esc(st.note)}</p>
-        </div>
+        <h2 class="stretch-head"><span>${esc(st.name)}</span><span>${st.a}–${st.b}</span></h2>
         ${J.slice(st.a - 1, st.b).map((j) => {
-          const open = j.n === S.sel, tag = tagOf(j);
+          const open = j.n === S.sel;
           return `
           <article class="jitem${open ? ' open' : ''}" data-n="${j.n}">
             <button type="button" class="jrow" aria-expanded="${open}">
               <span class="num${MOTORWAY_JUNCTIONS.has(j.n) ? ' mw' : ''}">${j.n}</span>
-              <span class="where"><span class="place">${esc(j.loc)}</span>${open && j.name ? `<span class="aka">${esc(j.name)}</span>` : ''}${tag ? `<span class="tag${j.tag ? ' odd' : ''}">${esc(tag)}</span>` : ''}</span>
+              <span class="where"><span class="place">${esc(j.loc)}</span>${open && j.name ? `<span class="aka">${esc(j.name)}</span>` : ''}</span>
               <span class="roads">${roadsOf(j).join(' · ')}</span>
             </button>
             ${open ? detailHTML(j) : ''}
@@ -340,6 +328,22 @@
       it.onmouseleave = () => spot(null);
     });
   }
+  // quirks under About; each junction number opens that junction
+  function renderQuirks() {
+    $('#quirks').innerHTML = window.QUIRKS.map((q) => `
+      <li>
+        <p class="q-title">${esc(q.title)}</p>
+        <p class="q-text">${esc(q.text)}</p>
+        <p class="q-links">${q.js.map((n) => `<button type="button" class="jlink" data-n="${n}" aria-label="Show junction ${n}">J${n}</button>`).join('')}</p>
+      </li>`).join('');
+    document.querySelectorAll('.jlink').forEach((b) => {
+      const n = +b.dataset.n;
+      b.onclick = () => pick(n);
+      b.onmouseenter = () => spot(n);
+      b.onmouseleave = () => spot(null);
+    });
+  }
+
   // hovering a junction in the list picks it out on the map
   function spot(n) { S.spot = n; renderMap(); }
 
@@ -633,6 +637,7 @@
   /* ---------- start ---------- */
   const hash = /^#j(\d{1,2})$/.exec(location.hash);
   if (hash && +hash[1] >= 1 && +hash[1] <= N) S.sel = +hash[1];
+  renderQuirks();
   FIT = fitView();
   view = { ...FIT };
   applyView();

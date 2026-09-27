@@ -3,9 +3,8 @@
 A map of the M60, Manchester's orbital motorway. All 27 junctions are numbered
 on a full-window map drawn from OpenStreetMap. A floating panel lists the ring
 stretch by stretch. Open a junction to see where its exit signs send you in each
-direction and how far it is to the next one. Quirks such as half junctions and
-the M62 overlap are flagged in the list, and there is a short history of the
-road under About.
+direction and how far it is to the next one. About covers the road's quirks, such
+as half junctions and the M62 overlap, and its history.
 
 It is a small static site with no build step for the page itself.
 
@@ -24,7 +23,7 @@ Then open <http://localhost:8765>.
 | `index.html` | The page. |
 | `styles.css` | The visual system, both themes and the responsive layout. |
 | `script.js` | The map, pan and zoom, the junction list, About, and Drive the loop. |
-| `data/junctions.js` | Junction content: places, sign destinations, notes, stretches with their notes. Edit this to change the words. |
+| `data/junctions.js` | Junction content: places, sign destinations, notes, stretches and quirks. Edit this to change the words. |
 | `data/geo.js` | Generated map geometry. Do not edit by hand. |
 | `scripts/fetch_osm.sh` | Refreshes the OpenStreetMap extracts in `scripts/osm/`. |
 | `scripts/build_geo.py` | Turns the extracts into `data/geo.js`. |

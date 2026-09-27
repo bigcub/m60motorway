@@ -308,11 +308,9 @@ a { color: inherit; }
 .pane.about { position: relative; padding: 18px 20px 22px; }
 
 /* the ring, stretch by stretch */
-.stretch + .stretch { margin-top: 6px; border-top: 1px solid var(--rule); }
-.stretch-head { padding: 16px 8px 8px; }
-.stretch-head .eyebrow { display: flex; justify-content: space-between; gap: 12px; }
-.stretch-head h2 { margin: 4px 0 0; font: 400 1.22rem/1.25 var(--display); letter-spacing: -0.02em; }
-.stretch-note { margin: 4px 0 0; color: var(--muted); font-size: 0.8rem; line-height: 1.5; }
+.stretch + .stretch { margin-top: 4px; }
+.stretch-head { display: flex; justify-content: space-between; gap: 12px; margin: 0; padding: 18px 8px 6px; color: var(--muted); font: 500 0.68rem/1.4 var(--ui); letter-spacing: 0.12em; text-transform: uppercase; }
+.stretch-head span:last-child { letter-spacing: 0.04em; }
 
 .jitem { border-radius: 16px; transition: background-color 0.2s ease, box-shadow 0.2s ease; }
 .jitem.open { background: var(--card); box-shadow: var(--shadow-sm), 0 0 0 1px var(--rule-soft); margin: 4px 0; }
@@ -337,8 +335,6 @@ a { color: inherit; }
 .jrow .where { display: flex; flex-direction: column; min-width: 0; }
 .jrow .place { font: 400 1.02rem/1.3 var(--display); letter-spacing: -0.015em; }
 .jitem.open .place { font-size: 1.28rem; }
-.jrow .tag { color: var(--muted); font-size: 0.72rem; line-height: 1.35; }
-.jrow .tag.odd { color: var(--route-deep); }
 .jrow .roads { color: var(--muted); font-size: 0.72rem; white-space: nowrap; }
 
 .jbody { padding: 0 16px 16px; }
@@ -422,6 +418,16 @@ a { color: inherit; }
 .about .figures div { padding: 10px 12px; }
 .about .figures dd { font-size: 1.2rem; }
 .about .prose p { font-size: 0.95rem; line-height: 1.75; }
+.about-h { margin: 26px 0 0; font: 400 1.25rem/1.3 var(--display); letter-spacing: -0.02em; }
+.quirks { list-style: none; margin: 8px 0 0; padding: 0; }
+.quirks li { padding: 12px 0; border-bottom: 1px solid var(--rule-soft); }
+.quirks p { margin: 0; }
+.q-title { font-size: 0.88rem; font-weight: 600; }
+.q-text { margin-top: 3px !important; color: var(--ink-mid); font-size: 0.84rem; line-height: 1.55; }
+.q-links { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px !important; }
+.jlink { height: 24px; padding: 0 9px; border: 1px solid var(--rule); border-radius: 999px; background: transparent; font: 600 0.72rem var(--ui); font-variant-numeric: tabular-nums; cursor: pointer; transition: background-color 0.15s ease, border-color 0.15s ease; }
+.jlink:hover { background: color-mix(in srgb, var(--gold) 22%, transparent); border-color: var(--gold); }
+.about .prose p:first-child { margin-top: 8px; }
 .keys, .credits { margin: 16px 0 0; color: var(--muted); font-size: 0.78rem; line-height: 1.6; }
 .credits a { text-underline-offset: 3px; }
 kbd { font: 500 0.72rem var(--ui); border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 5px; padding: 0 5px; background: var(--card); }
