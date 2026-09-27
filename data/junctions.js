@@ -3,7 +3,7 @@
 // there is no exit that way. Sources: the Wikipedia junction list (driver
 // location signs) and OpenStreetMap junction names.
 window.JUNCTIONS = [
-  { n: 1, loc: 'Stockport', name: 'Pyramid Roundabout',
+  { n: 1, tag: 'Where the numbers start', loc: 'Stockport', name: 'Pyramid Roundabout',
     cw: [['A5145', 'Stockport (West)']], acw: [['A5145', 'Stockport (West & Centre)']],
     note: 'The blue glass Stockport Pyramid stands beside this junction. The numbering starts here and counts up clockwise.' },
   { n: 2, loc: 'Cheadle',
@@ -12,7 +12,7 @@ window.JUNCTIONS = [
   { n: 3, loc: 'Cheadle', name: 'Kingsway Interchange',
     cw: [['A34', 'Cheadle, Wilmslow']], acw: [['A34', 'Cheadle, Wilmslow']],
     note: 'The A34 Kingsway. J3 and J4 are knotted together into one big interchange at Gatley.' },
-  { n: 4, loc: 'Gatley', name: 'Kingsway Interchange',
+  { n: 4, tag: 'Clockwise only, for the airport', loc: 'Gatley', name: 'Kingsway Interchange',
     cw: [['M56', 'Chester, Warrington, Manchester Airport'], ['(M6)', 'Birmingham']], acw: null,
     note: 'The M56 to Manchester Airport and Chester. Only clockwise traffic can leave here. Going anticlockwise, use J5 for the airport.' },
   { n: 5, loc: 'Northenden', name: 'Princess Parkway Interchange',
@@ -30,13 +30,13 @@ window.JUNCTIONS = [
   { n: 9, loc: 'Urmston', name: 'Lostock',
     cw: [['B5158', 'Urmston'], ['A5081', 'Trafford Park']], acw: [['A5081', 'Trafford Park, Trafford Centre']],
     note: 'Parkway into Trafford Park. J9 and J10 both serve the Trafford Centre.' },
-  { n: 10, loc: 'Urmston', name: 'Redclyffe',
+  { n: 10, tag: 'Barton bridge next, clockwise', loc: 'Urmston', name: 'Redclyffe',
     cw: [['B5214', 'Trafford Park']], acw: [['B5214', 'Trafford Park, Urmston']],
     note: 'Right beside the Trafford Centre. Clockwise, the Barton High Level Bridge over the Ship Canal comes next.' },
   { n: 11, loc: 'Eccles', name: 'Peel Green Interchange',
     cw: [['A57', 'Irlam, Eccles']], acw: [['A57', 'Eccles, Irlam']],
     note: 'Just north of the Barton High Level Bridge over the Manchester Ship Canal.' },
-  { n: 12, loc: 'Eccles', name: 'Eccles Interchange',
+  { n: 12, tag: 'M62 joins', loc: 'Eccles', name: 'Eccles Interchange',
     cw: [['M62', 'Liverpool, Warrington'], ['M602', 'Manchester (C), Salford']], acw: [['M602', 'Manchester (C), Salford'], ['M62 (M6)', 'Liverpool']],
     note: 'West to Liverpool on the M62, or into Salford on the M602. The M62 shares the M60 from here to J18.' },
   { n: 13, loc: 'Worsley & Swinton', name: 'Worsley Interchange',
@@ -48,13 +48,13 @@ window.JUNCTIONS = [
   { n: 15, loc: 'Worsley',
     cw: [['M61', 'Preston, Wigan, Bolton']], acw: [['M61', 'Preston, Wigan, Bolton'], ['(M6)', 'The North']],
     note: 'The M61 north to Bolton and Preston.' },
-  { n: 16, loc: 'Clifton', name: 'Clifton Junction',
+  { n: 16, tag: 'Busiest stretch in 2004', loc: 'Clifton', name: 'Clifton Junction',
     cw: null, acw: [['A666', 'Salford, Kearsley']],
     note: 'Exit anticlockwise only. In 2004 the stretch from J16 to J17 was the busiest road in the UK, at about 181,000 vehicles a day.' },
   { n: 17, loc: 'Whitefield & Prestwich', name: 'Whitefield Interchange',
     cw: [['A56', 'Whitefield, Prestwich']], acw: [['A56', 'Manchester (C), Prestwich, Whitefield']],
     note: 'Bury New Road. The same A56 you met at J7, on the other side of the city.' },
-  { n: 18, loc: 'Simister', name: 'Simister Island',
+  { n: 18, tag: 'Turn off to stay on', loc: 'Simister', name: 'Simister Island',
     cw: [['M62', 'Leeds'], ['M66', 'Bury, Burnley, Blackburn']], acw: [['M66', 'Burnley, Bury'], ['M62', 'Leeds, Huddersfield']],
     note: 'Simister Island. The M62 leaves east for Leeds and the M66 heads north to Bury. Heaton Park is just inside the ring.' },
   { n: 19, loc: 'Middleton', name: 'Rhodes Interchange',
@@ -69,7 +69,7 @@ window.JUNCTIONS = [
   { n: 22, loc: 'Failsworth', name: 'Hollinwood Interchange',
     cw: [['A62', 'Oldham']], acw: [['A62', 'Manchester (C), Oldham']],
     note: 'The A62 Oldham Road.' },
-  { n: 23, loc: 'Ashton-under-Lyne', name: 'Snipe Interchange',
+  { n: 23, tag: 'Signed by two different roads', loc: 'Ashton-under-Lyne', name: 'Snipe Interchange',
     cw: [['A635', 'Ashton-under-Lyne']], acw: [['A6140', 'Ashton-under-Lyne']],
     note: 'Due east of the city centre. Each direction signs Ashton by a different road: the A635 clockwise, the A6140 anticlockwise.' },
   { n: 24, loc: 'Denton', name: 'Denton Island',
@@ -86,25 +86,11 @@ window.JUNCTIONS = [
     note: 'Portwood. You can only leave here travelling anticlockwise. Carry on clockwise and you are back at J1.' },
 ];
 
-// The stretches of the ring, for the index.
+// The stretches of the ring, used to group the list. `note` points out what is odd about each.
 window.STRETCHES = [
-  { name: 'Stockport to the airport', side: 'South', a: 1, b: 5 },
-  { name: 'Sale and Trafford', side: 'South-west', a: 6, b: 11 },
-  { name: 'Eccles to Prestwich', side: 'North-west', a: 12, b: 17 },
-  { name: 'Simister to Ashton', side: 'North and east', a: 18, b: 23 },
-  { name: 'Denton back to Stockport', side: 'East', a: 24, b: 27 },
-];
-
-// Junctions of interest. Choosing one picks its junctions out on the map.
-window.ODDITIES = [
-  { tone: 'rose', figure: 'J18', title: 'Turn off to stay on', text: 'At Simister Island the through lanes carry on as the M62. To stay on the M60 you leave by the slip road and loop round the interchange.', js: [18] },
-  { tone: 'sky', figure: 'J12 – J18', title: 'Two motorways, one road', text: 'From Eccles to Simister the M60 and the M62 share the same carriageways. The junction numbers you see are the M60\'s.', js: [12, 13, 14, 15, 16, 17, 18] },
-  { tone: 'amber', figure: 'J4 and J5', title: 'The airport, two ways', text: 'Clockwise, the M56 for the airport leaves at J4. Anticlockwise there is no exit at J4, so the signs send you off at J5 instead.', js: [4, 5] },
-  { tone: 'slate', figure: '2 · 4 · 14 · 16 · 20 · 26 · 27', title: 'Half junctions', text: 'Seven junctions only let you off in one direction. 4, 20 and 26 are exits clockwise only; 2, 14, 16 and 27 anticlockwise only.', js: [2, 4, 14, 16, 20, 26, 27] },
-  { tone: 'cream', figure: 'J10 – J11', title: 'The oldest stretch', text: 'The Stretford–Eccles bypass opened in 1960, carried over the Manchester Ship Canal by the Barton High Level Bridge.', js: [10, 11] },
-  { tone: 'sage', figure: 'J19 – J23', title: 'The last stretch', text: 'The ring was only closed in October 2000, when the section from Middleton round to Ashton opened.', js: [19, 20, 21, 22, 23] },
-  { tone: 'lavender', figure: 'J16 – J17', title: 'Busiest in Britain', text: 'In 2004 this stretch through Clifton and Whitefield carried about 181,000 vehicles a day, more than any other road in the country.', js: [16, 17] },
-  { tone: 'mint', figure: 'J7 and J17', title: 'The A56, twice', text: 'Chester Road crosses the ring at J7 and Bury New Road at J17. Both are the A56, which runs straight through the city between them.', js: [7, 17] },
-  { tone: 'rose', figure: 'J23', title: 'One junction, two roads', text: 'Both directions are signed for Ashton-under-Lyne, but by different roads: the A635 clockwise and the A6140 anticlockwise.', js: [23] },
-  { tone: 'amber', figure: 'J1', title: 'The Pyramid', text: 'The numbering starts beside Stockport\'s blue glass pyramid, an office block that has become the ring\'s best-known landmark.', js: [1] },
+  { name: 'Stockport to the airport', side: 'South', a: 1, b: 5, note: 'The numbering starts at Stockport. The airport is J4 clockwise but J5 anticlockwise.' },
+  { name: 'Sale and Trafford', side: 'South-west', a: 6, b: 11, note: 'The oldest part of the ring, opened in 1960, crosses the Ship Canal on the Barton High Level Bridge between J10 and J11.' },
+  { name: 'Eccles to Prestwich', side: 'North-west', a: 12, b: 17, note: 'The M62 shares the road from J12 to J18. In 2004 J16 to J17 was the busiest road in Britain.' },
+  { name: 'Simister to Ashton', side: 'North and east', a: 18, b: 23, note: 'J19 to J23 was the last stretch built. It opened in October 2000 and closed the ring.' },
+  { name: 'Denton back to Stockport', side: 'East', a: 24, b: 27, note: 'J25, J26 and J27 come within two miles on the run back into Stockport, and two of them only let you off one way.' },
 ];

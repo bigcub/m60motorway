@@ -63,40 +63,29 @@
 
       <button class="pill show-panel" id="show-panel" type="button" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12 5 7 10l5 5" /></svg>Details</button>
 
-      <aside class="panel" id="panel" aria-label="Junction details">
+      <aside class="panel" id="panel" aria-label="Junctions">
         <div class="panel-top">
-          <div class="tabs" role="tablist" aria-label="Panel">
-            <button type="button" role="tab" id="tab-junction" aria-controls="pane-junction" aria-selected="true">Junction</button>
-            <button type="button" role="tab" id="tab-odd" aria-controls="pane-odd" aria-selected="false">Of interest</button>
-            <button type="button" role="tab" id="tab-list" aria-controls="pane-list" aria-selected="false">All 27</button>
-            <button type="button" role="tab" id="tab-about" aria-controls="pane-about" aria-selected="false">About</button>
+          <div class="segmented" role="group" aria-label="Direction of travel">
+            <button type="button" id="d-cw" aria-pressed="true">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.2 10A6.2 6.2 0 1 1 13.4 4.8" /><path d="M13.8 1.8v3.4h-3.4" /></svg>Clockwise
+            </button>
+            <button type="button" id="d-acw" aria-pressed="false">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.8 10A6.2 6.2 0 1 0 6.6 4.8" /><path d="M6.2 1.8v3.4h3.4" /></svg>Anticlockwise
+            </button>
           </div>
-          <button class="round-button small" id="hide-panel" type="button" aria-label="Hide the panel" title="Hide the panel"><svg viewBox="0 0 20 20" aria-hidden="true"><path class="side" d="m8 5 5 5-5 5" /><path class="sheet" d="m5 8 5 5 5-5" /></svg></button>
+          <div class="panel-actions">
+            <button class="round-button small" id="about-btn" type="button" aria-pressed="false" aria-label="About the M60" title="About the M60"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.2" /><path d="M10 9v5" /><circle class="dot" cx="10" cy="6.3" r=".6" /></svg></button>
+            <button class="round-button small" id="hide-panel" type="button" aria-label="Hide the panel" title="Hide the panel"><svg viewBox="0 0 20 20" aria-hidden="true"><path class="side" d="m8 5 5 5-5 5" /><path class="sheet" d="m5 8 5 5 5-5" /></svg></button>
+          </div>
         </div>
 
         <div class="panes">
-          <section class="pane" id="pane-junction" role="tabpanel" aria-labelledby="tab-junction">
-            <div class="segmented" role="group" aria-label="Direction of travel">
-              <button type="button" id="d-cw" aria-pressed="true">
-                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.2 10A6.2 6.2 0 1 1 13.4 4.8" /><path d="M13.8 1.8v3.4h-3.4" /></svg>Clockwise
-              </button>
-              <button type="button" id="d-acw" aria-pressed="false">
-                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.8 10A6.2 6.2 0 1 0 6.6 4.8" /><path d="M6.2 1.8v3.4h3.4" /></svg>Anticlockwise
-              </button>
-            </div>
-            <div id="detail" aria-live="polite"></div>
-          </section>
-
-          <section class="pane" id="pane-odd" role="tabpanel" aria-labelledby="tab-odd" hidden>
-            <p class="pane-deck">Quirks, half junctions and landmarks. Choose one to pick its junctions out on the map.</p>
-            <div class="odd-list" id="oddities"></div>
-          </section>
-
-          <section class="pane" id="pane-list" role="tabpanel" aria-labelledby="tab-list" hidden>
+          <section class="pane" id="pane-ring" aria-label="The junctions">
             <div id="list"></div>
           </section>
 
-          <section class="pane about" id="pane-about" role="tabpanel" aria-labelledby="tab-about" hidden>
+          <section class="pane about" id="pane-about" aria-label="About the M60" hidden>
+            <button type="button" class="back" id="about-back"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12 5 7 10l5 5" /></svg>All junctions</button>
             <figure class="scene">
               <svg viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" role="img" aria-labelledby="scene-desc">
           <desc id="scene-desc">The Barton High Level Bridge at dusk. The M60 crosses the Manchester Ship Canal on a long viaduct, with car lights moving along it and the city skyline beyond. After dark the stars come out and the windows light up.</desc>

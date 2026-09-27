@@ -34,7 +34,7 @@
 
   /* ---------- state ---------- */
   const prefs = store.get('m60.prefs', {});
-  const S = { sel: 1, dir: prefs.dir === 'acw' ? 'acw' : 'cw', spot: null, driving: false, tab: 'junction', panelHidden: false };
+  const S = { sel: 1, dir: prefs.dir === 'acw' ? 'acw' : 'cw', spot: null, driving: false, view: 'ring', panelHidden: false };
   const savePrefs = () => store.set('m60.prefs', { dir: S.dir });
 
   /* ---------- geometry ---------- */
@@ -277,81 +277,87 @@
 
   /* ---------- rendering ---------- */
   const icon = {
-    left: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12 5 7 10l5 5"/></svg>',
-    right: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m8 5 5 5-5 5"/></svg>',
     cw: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.2 10A6.2 6.2 0 1 1 13.4 4.8"/><path d="M13.8 1.8v3.4h-3.4"/></svg>',
     acw: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.8 10A6.2 6.2 0 1 0 6.6 4.8"/><path d="M6.2 1.8v3.4h3.4"/></svg>',
   };
   const chipsHTML = (road) => road.split(' ').map((t) => `<span class="chip${/^\(?M\d|\(M\)/.test(t) ? ' m' : ''}">${esc(t)}</span>`).join('');
+  const dirWord = (d = S.dir) => (d === 'cw' ? 'clockwise' : 'anticlockwise');
 
-  function renderDetail() {
-    const j = J[S.sel - 1], rows = j[S.dir];
-    const nx = nextOf(j.n, S.dir), pv = nextOf(j.n, other(S.dir));
-    const dirWord = S.dir === 'cw' ? 'clockwise' : 'anticlockwise';
-    const signs = rows
-      ? `<p class="eyebrow">Leaving ${dirWord}, signed for</p>` +
-        rows.map((r) => `<div class="sign-row"><span class="chips">${chipsHTML(r[0])}</span><span class="places">${esc(r[1])}</span></div>`).join('')
-      : `<p class="no-exit">No exit ${dirWord}.<span>Only a slip road joins here. Stay on for J${nx}, or use this junction when travelling ${S.dir === 'cw' ? 'anticlockwise' : 'clockwise'}.</span></p>`;
-    const exit = (ok, dir) => `<span class="${ok ? '' : 'no'}" title="${ok ? 'Exit' : 'No exit'} ${dir === 'cw' ? 'clockwise' : 'anticlockwise'}">${icon[dir]}${dir === 'cw' ? 'Clockwise' : 'Anti'}</span>`;
-    $('#detail').innerHTML = `
-      <div class="jhead">
-        <div class="jnum-big" aria-label="Junction ${j.n}">${j.n}</div>
-        <div><h2>${esc(j.loc)}</h2>${j.name ? `<p class="aka">${esc(j.name)}</p>` : ''}</div>
-      </div>
-      <div class="signs">${signs}</div>
-      <dl class="facts">
-        <div><dt>Mile</dt><dd>${j.mi.toFixed(1)} <small>of 36.1</small></dd></div>
-        <div><dt>Next ${dirWord === 'clockwise' ? '↻' : '↺'}</dt><dd>J${nx} <small>in ${milesBetween(j.n, nx, S.dir).toFixed(1)} mi</small></dd></div>
-        <div><dt>Exits</dt><dd class="exits">${exit(!!j.cw, 'cw')}${exit(!!j.acw, 'acw')}</dd></div>
-      </dl>
-      <p class="note">${esc(j.note)}</p>
-      <div class="step">
-        <button type="button" id="prev" aria-label="Previous junction, ${pv}">${icon.left}<span class="n">J${pv}</span></button>
-        <button type="button" id="next" aria-label="Next junction, ${nx}"><span class="n">J${nx}</span>${icon.right}</button>
-      </div>`;
-    $('#prev').onclick = () => pick(pv);
-    $('#next').onclick = () => pick(nx);
+  // the short line under a junction in the list: its quirk, or that it only has an exit one way
+  function tagOf(j) {
+    if (j.tag) return j.tag;
+    if (!j.cw) return 'Exit anticlockwise only';
+    if (!j.acw) return 'Exit clockwise only';
+    return '';
   }
 
+  // an opened junction: where the signs send you, how far to the next one, and a note
+  function detailHTML(j) {
+    const rows = j[S.dir], nx = nextOf(j.n, S.dir), w = dirWord();
+    const signs = rows
+      ? `<p class="eyebrow">Leaving ${w}, signed for</p>` +
+        rows.map((r) => `<div class="sign-row"><span class="chips">${chipsHTML(r[0])}</span><span class="places">${esc(r[1])}</span></div>`).join('')
+      : `<p class="no-exit">No exit ${w}.<span>Only a slip road joins here. Stay on for J${nx}, or use this junction travelling ${dirWord(other(S.dir))}.</span></p>`;
+    const exit = (ok, d) => `<span class="${ok ? '' : 'no'}" title="${ok ? 'Exit' : 'No exit'} ${dirWord(d)}">${icon[d]}${d === 'cw' ? 'Clockwise' : 'Anti'}</span>`;
+    return `
+      <div class="jbody">
+        <div class="signs">${signs}</div>
+        <dl class="facts">
+          <div><dt>Mile</dt><dd>${j.mi.toFixed(1)} <small>of 36.1</small></dd></div>
+          <div><dt>Next ${S.dir === 'cw' ? '↻' : '↺'}</dt><dd>J${nx} <small>in ${milesBetween(j.n, nx, S.dir).toFixed(1)} mi</small></dd></div>
+          <div><dt>Exits</dt><dd class="exits">${exit(!!j.cw, 'cw')}${exit(!!j.acw, 'acw')}</dd></div>
+        </dl>
+        <p class="note">${esc(j.note)}</p>
+      </div>`;
+  }
+
+  // The panel is the ring itself: every junction in order, grouped by stretch, with the chosen one open.
   function renderList() {
     $('#list').innerHTML = window.STRETCHES.map((st) => `
-      <div class="stretch">
-        <p class="stretch-head eyebrow"><span>${esc(st.side)} · ${st.a}–${st.b}</span><span>${esc(st.name)}</span></p>
-        ${J.slice(st.a - 1, st.b).map((j) => `
-          <button type="button" class="jrow" data-n="${j.n}" aria-current="${j.n === S.sel}">
-            <span class="num${MOTORWAY_JUNCTIONS.has(j.n) ? ' mw' : ''}">${j.n}</span>
-            <span class="where">${esc(j.loc)}</span>
-            <span class="roads">${roadsOf(j).join(' · ')}</span>
-          </button>`).join('')}
-      </div>`).join('');
-    document.querySelectorAll('.jrow').forEach((b) => {
-      b.onclick = () => pick(+b.dataset.n);
+      <section class="stretch">
+        <div class="stretch-head">
+          <p class="eyebrow"><span>${esc(st.side)}</span><span>J${st.a} – J${st.b}</span></p>
+          <h2>${esc(st.name)}</h2>
+          <p class="stretch-note">${esc(st.note)}</p>
+        </div>
+        ${J.slice(st.a - 1, st.b).map((j) => {
+          const open = j.n === S.sel, tag = tagOf(j);
+          return `
+          <article class="jitem${open ? ' open' : ''}" data-n="${j.n}">
+            <button type="button" class="jrow" aria-expanded="${open}">
+              <span class="num${MOTORWAY_JUNCTIONS.has(j.n) ? ' mw' : ''}">${j.n}</span>
+              <span class="where"><span class="place">${esc(j.loc)}</span>${open && j.name ? `<span class="aka">${esc(j.name)}</span>` : ''}${tag ? `<span class="tag${j.tag ? ' odd' : ''}">${esc(tag)}</span>` : ''}</span>
+              <span class="roads">${roadsOf(j).join(' · ')}</span>
+            </button>
+            ${open ? detailHTML(j) : ''}
+          </article>`;
+        }).join('')}
+      </section>`).join('');
+    document.querySelectorAll('.jitem').forEach((it) => {
+      const n = +it.dataset.n;
+      it.querySelector('.jrow').onclick = () => pick(n);
+      it.onmouseenter = () => spot(n);
+      it.onmouseleave = () => spot(null);
     });
   }
+  // hovering a junction in the list picks it out on the map
+  function spot(n) { S.spot = n; renderMap(); }
 
-  function renderOddities() {
-    $('#oddities').innerHTML = window.ODDITIES.map((h, i) => `
-      <button type="button" class="odd-card tone-${h.tone}" data-i="${i}" aria-pressed="false">
-        <span class="fig">${esc(h.figure)}</span>
-        <span class="t">${esc(h.title)}</span>
-        <span class="x">${esc(h.text)}</span>
-      </button>`).join('');
-    document.querySelectorAll('.odd-card').forEach((b) => {
-      b.onclick = () => {
-        const i = +b.dataset.i;
-        S.spot = S.spot === i ? null : i;
-        document.querySelectorAll('.odd-card').forEach((c) => c.setAttribute('aria-pressed', String(+c.dataset.i === S.spot)));
-        renderMap();
-      };
-    });
+  // keep the open junction in view inside the panel
+  function scrollToSelected(instant) {
+    const it = document.querySelector('.jitem.open');
+    if (!it || S.view !== 'ring') return;
+    const panes = $('.panes'), r = it.getBoundingClientRect(), pr = panes.getBoundingClientRect();
+    if (r.top < pr.top + 8 || r.bottom > pr.bottom - 8) {
+      panes.scrollTo({ top: panes.scrollTop + (r.top - pr.top) - 10, behavior: instant || reduceMotion() ? 'auto' : 'smooth' });
+    }
   }
 
   function renderMap() {
-    const spot = S.spot === null ? null : new Set(window.ODDITIES[S.spot].js);
     J.forEach((j) => {
       const on = j.n === S.sel;
       j.g.classList.toggle('sel', on);
-      j.g.classList.toggle('spot', !!spot && spot.has(j.n));
+      j.g.classList.toggle('spot', j.n === S.spot && !on);
       j.txt.textContent = j.n;
       j.dot.classList.toggle('on', on);
     });
@@ -361,8 +367,8 @@
 
   function render() {
     renderMap();
-    renderDetail();
-    document.querySelectorAll('.jrow').forEach((b) => b.setAttribute('aria-current', String(+b.dataset.n === S.sel)));
+    renderList();
+    scrollToSelected();
     $('#d-cw').setAttribute('aria-pressed', String(S.dir === 'cw'));
     $('#d-acw').setAttribute('aria-pressed', String(S.dir === 'acw'));
     queueLayout();
@@ -376,25 +382,26 @@
     if (reveal) ensureVisible(J[n - 1]);
   }
   function setDir(d) { S.dir = d; savePrefs(); render(); }
-  // a junction chosen by the reader: stop any drive and show its details
+  // a junction chosen by the reader: stop any drive and show it in the list
   function pick(n, reveal = true) {
     stopDrive();
+    if (S.view !== 'ring') setView('ring');
+    if (S.panelHidden && narrow()) setPanel(true);
     select(n, reveal);
-    if (S.tab !== 'junction') setTab('junction');
   }
 
   /* ---------- panel ---------- */
-  const TABS = ['junction', 'odd', 'list', 'about'];
-  function setTab(name) {
-    S.tab = name;
-    TABS.forEach((t) => {
-      $('#tab-' + t).setAttribute('aria-selected', String(t === name));
-      $('#pane-' + t).hidden = t !== name;
-    });
+  function setView(v) {
+    S.view = v;
+    $('#pane-ring').hidden = v !== 'ring';
+    $('#pane-about').hidden = v !== 'about';
+    $('#about-btn').setAttribute('aria-pressed', String(v === 'about'));
     $('.panes').scrollTop = 0;
     if (S.panelHidden) setPanel(true);
+    if (v === 'ring') scrollToSelected();
   }
-  TABS.forEach((t) => { $('#tab-' + t).onclick = () => setTab(t); });
+  $('#about-btn').onclick = () => setView(S.view === 'about' ? 'ring' : 'about');
+  $('#about-back').onclick = () => setView('ring');
 
   function setPanel(show) {
     S.panelHidden = !show;
@@ -586,7 +593,7 @@
     place(car, p.x, p.y, K);
   }
   function startDrive() {
-    if (S.tab !== 'junction') setTab('junction');
+    if (S.view !== 'ring') setView('ring');
     S.driving = true; carS = J[S.sel - 1].s; lastT = 0;
     $('#drive').setAttribute('aria-pressed', 'true');
     $('#drive-label').textContent = 'Stop';
@@ -626,10 +633,10 @@
   /* ---------- start ---------- */
   const hash = /^#j(\d{1,2})$/.exec(location.hash);
   if (hash && +hash[1] >= 1 && +hash[1] <= N) S.sel = +hash[1];
-  renderOddities();
-  renderList();
   FIT = fitView();
   view = { ...FIT };
   applyView();
   render();
+  scrollToSelected(true);
+  document.fonts?.ready.then(() => scrollToSelected(true));
 })();
