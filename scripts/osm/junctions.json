@@ -1,0 +1,634 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-09-27T19:49:02Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 234966,
+  "lat": 53.4001200,
+  "lon": -2.2178990,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Kingsway Interchange",
+    "ref": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 322695,
+  "lat": 53.5467823,
+  "lon": -2.2698360,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Simister Interchange",
+    "ref": "18"
+  }
+},
+{
+  "type": "node",
+  "id": 322707,
+  "lat": 53.5469535,
+  "lon": -2.2573770,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Simister Interchange",
+    "ref": "18"
+  }
+},
+{
+  "type": "node",
+  "id": 322724,
+  "lat": 53.5419033,
+  "lon": -2.2832053,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Whitefield Interchange",
+    "ref": "17"
+  }
+},
+{
+  "type": "node",
+  "id": 322761,
+  "lat": 53.5280617,
+  "lon": -2.3282083,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Clifton Junction",
+    "ref": "16"
+  }
+},
+{
+  "type": "node",
+  "id": 322774,
+  "lat": 53.5246984,
+  "lon": -2.3492494,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Worsley Interchange",
+    "ref": "15"
+  }
+},
+{
+  "type": "node",
+  "id": 322814,
+  "lat": 53.5055081,
+  "lon": -2.3779318,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Worsley Interchange",
+    "ref": "13"
+  }
+},
+{
+  "type": "node",
+  "id": 322825,
+  "lat": 53.4952780,
+  "lon": -2.3840239,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Worsley Interchange",
+    "ref": "13"
+  }
+},
+{
+  "type": "node",
+  "id": 322835,
+  "lat": 53.4910737,
+  "lon": -2.3790968,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Eccles Interchange",
+    "ref": "12"
+  }
+},
+{
+  "type": "node",
+  "id": 334001,
+  "lat": 53.3990527,
+  "lon": -2.2359774,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Kingsway Interchange",
+    "ref": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 334013,
+  "lat": 53.4011077,
+  "lon": -2.2144096,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Roscoe's",
+    "ref": "2"
+  }
+},
+{
+  "type": "node",
+  "id": 334041,
+  "lat": 53.4086548,
+  "lon": -2.1792030,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Pyramid Roundabout",
+    "ref": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 334106,
+  "lat": 53.4285754,
+  "lon": -2.1259980,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Bredbury Interchange",
+    "ref": "25"
+  }
+},
+{
+  "type": "node",
+  "id": 334142,
+  "lat": 53.4524646,
+  "lon": -2.1358750,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Denton",
+    "ref": "24"
+  }
+},
+{
+  "type": "node",
+  "id": 334166,
+  "lat": 53.4618562,
+  "lon": -2.1379946,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Denton",
+    "ref": "24"
+  }
+},
+{
+  "type": "node",
+  "id": 334182,
+  "lat": 53.4757712,
+  "lon": -2.1253503,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Snipe Interchange",
+    "ref": "23"
+  }
+},
+{
+  "type": "node",
+  "id": 334194,
+  "lat": 53.4875882,
+  "lon": -2.1158645,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Snipe Interchange",
+    "ref": "23"
+  }
+},
+{
+  "type": "node",
+  "id": 334241,
+  "lat": 53.5168168,
+  "lon": -2.1389210,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Hollinwood Interchange",
+    "ref": "22"
+  }
+},
+{
+  "type": "node",
+  "id": 334249,
+  "lat": 53.5217590,
+  "lon": -2.1483207,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Hollinwood Interchange",
+    "ref": "22"
+  }
+},
+{
+  "type": "node",
+  "id": 334252,
+  "lat": 53.5221816,
+  "lon": -2.1508783,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Broadway Interchange",
+    "ref": "21"
+  }
+},
+{
+  "type": "node",
+  "id": 334322,
+  "lat": 53.5373896,
+  "lon": -2.2102420,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Alkrington Interchange",
+    "ref": "20"
+  }
+},
+{
+  "type": "node",
+  "id": 334346,
+  "lat": 53.5396517,
+  "lon": -2.2302238,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Rhodes Interchange",
+    "ref": "19"
+  }
+},
+{
+  "type": "node",
+  "id": 334360,
+  "lat": 53.5426503,
+  "lon": -2.2432274,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Rhodes Interchange",
+    "ref": "19"
+  }
+},
+{
+  "type": "node",
+  "id": 334504,
+  "lat": 53.4142827,
+  "lon": -2.2718070,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Princess Parkway Interchange",
+    "ref": "5"
+  }
+},
+{
+  "type": "node",
+  "id": 334538,
+  "lat": 53.4005483,
+  "lon": -2.2417498,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Kingsway Interchange",
+    "ref": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 334615,
+  "lat": 53.4233138,
+  "lon": -2.2915755,
+  "tags": {
+    "highway": "motorway_junction",
+    "ref": "6"
+  }
+},
+{
+  "type": "node",
+  "id": 334621,
+  "lat": 53.4287893,
+  "lon": -2.2963763,
+  "tags": {
+    "highway": "motorway_junction",
+    "ref": "7;8"
+  }
+},
+{
+  "type": "node",
+  "id": 334673,
+  "lat": 53.4405289,
+  "lon": -2.3343136,
+  "tags": {
+    "highway": "motorway_junction",
+    "ref": "7;6"
+  }
+},
+{
+  "type": "node",
+  "id": 334691,
+  "lat": 53.4448102,
+  "lon": -2.3395438,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Carrington Interchange",
+    "ref": "8"
+  }
+},
+{
+  "type": "node",
+  "id": 334694,
+  "lat": 53.4541861,
+  "lon": -2.3391867,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Lostock",
+    "ref": "9"
+  }
+},
+{
+  "type": "node",
+  "id": 334734,
+  "lat": 53.4629158,
+  "lon": -2.3512886,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Redclyffe",
+    "ref": "10"
+  }
+},
+{
+  "type": "node",
+  "id": 334737,
+  "lat": 53.4659288,
+  "lon": -2.3629390,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Redclyffe",
+    "ref": "10"
+  }
+},
+{
+  "type": "node",
+  "id": 334755,
+  "lat": 53.4859523,
+  "lon": -2.3384423,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Gilda Brook Roundabout",
+    "ref": "2"
+  }
+},
+{
+  "type": "node",
+  "id": 334766,
+  "lat": 53.4851678,
+  "lon": -2.3214318,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Gilda Brook Roundabout",
+    "ref": "2"
+  }
+},
+{
+  "type": "node",
+  "id": 334801,
+  "lat": 53.4806403,
+  "lon": -2.2850932,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Regent Road Roundabout",
+    "ref": "3"
+  }
+},
+{
+  "type": "node",
+  "id": 3584629,
+  "lat": 53.4125444,
+  "lon": -2.2565448,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Princess Parkway Interchange",
+    "ref": "5"
+  }
+},
+{
+  "type": "node",
+  "id": 15316374,
+  "lat": 53.3985236,
+  "lon": -2.2284545,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Kingsway Interchange",
+    "ref": "4"
+  }
+},
+{
+  "type": "node",
+  "id": 20938406,
+  "lat": 53.4730520,
+  "lon": -2.3722599,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Peel Green Interchange",
+    "ref": "11"
+  }
+},
+{
+  "type": "node",
+  "id": 20938580,
+  "lat": 53.4853069,
+  "lon": -2.3759173,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Peel Green Interchange",
+    "ref": "11"
+  }
+},
+{
+  "type": "node",
+  "id": 20938708,
+  "lat": 53.4300301,
+  "lon": -2.2978253,
+  "tags": {
+    "highway": "motorway_junction",
+    "ref": "6"
+  }
+},
+{
+  "type": "node",
+  "id": 20938718,
+  "lat": 53.4343513,
+  "lon": -2.3103879,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Chester Road Interchange",
+    "ref": "7"
+  }
+},
+{
+  "type": "node",
+  "id": 21433299,
+  "lat": 53.4391009,
+  "lon": -2.3216289,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Chester Road Interchange",
+    "ref": "7"
+  }
+},
+{
+  "type": "node",
+  "id": 21496896,
+  "lat": 53.4392444,
+  "lon": -2.3297228,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Carrington Interchange",
+    "ref": "8"
+  }
+},
+{
+  "type": "node",
+  "id": 934790170,
+  "lat": 53.4151922,
+  "lon": -2.1530336,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Portwood Roundabout",
+    "ref": "27"
+  }
+},
+{
+  "type": "node",
+  "id": 959989207,
+  "lat": 53.4608026,
+  "lon": -2.3428355,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Lostock",
+    "ref": "9"
+  }
+},
+{
+  "type": "node",
+  "id": 1270490932,
+  "lat": 53.4854977,
+  "lon": -2.3831769,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Eccles Interchange",
+    "ref": "12"
+  }
+},
+{
+  "type": "node",
+  "id": 1592003797,
+  "lat": 53.4837818,
+  "lon": -2.3760666,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Eccles Interchange",
+    "ref": "12"
+  }
+},
+{
+  "type": "node",
+  "id": 1592004012,
+  "lat": 53.4891555,
+  "lon": -2.3717546,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Eccles Interchange",
+    "ref": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 1641515422,
+  "lat": 53.5375408,
+  "lon": -2.2956627,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Whitefield Interchange",
+    "ref": "17"
+  }
+},
+{
+  "type": "node",
+  "id": 1643288500,
+  "lat": 53.5214801,
+  "lon": -2.3648063,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Worsley Interchange",
+    "ref": "15"
+  }
+},
+{
+  "type": "node",
+  "id": 1643288663,
+  "lat": 53.5241757,
+  "lon": -2.3572786,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Wardley Interchange",
+    "ref": "14"
+  }
+},
+{
+  "type": "node",
+  "id": 1674511506,
+  "lat": 53.5275716,
+  "lon": -2.1716116,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Broadway Interchange",
+    "ref": "21"
+  }
+},
+{
+  "type": "node",
+  "id": 1678172459,
+  "lat": 53.4100462,
+  "lon": -2.1684343,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Pyramid Roundabout",
+    "ref": "1"
+  }
+},
+{
+  "type": "node",
+  "id": 1776089221,
+  "lat": 53.4206482,
+  "lon": -2.1329487,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Bredbury Scissors",
+    "official_name": "Lower Bredbury Interchange",
+    "ref": "26"
+  }
+},
+{
+  "type": "node",
+  "id": 1776089239,
+  "lat": 53.4216316,
+  "lon": -2.1300298,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Bredbury Interchange",
+    "ref": "25"
+  }
+},
+{
+  "type": "node",
+  "id": 9484943152,
+  "lat": 53.5199110,
+  "lon": -2.3668708,
+  "tags": {
+    "highway": "motorway_junction",
+    "name": "Worsley Interchange",
+    "ref": "15"
+  }
+},
+{
+  "type": "node",
+  "id": 11627099733,
+  "lat": 53.5460656,
+  "lon": -2.2725005,
+  "tags": {
+    "highway": "motorway_junction"
+  }
+}
+
+  ]
+}
