@@ -2,9 +2,8 @@
   'use strict';
 
   const GEO = window.GEO;
-  const N = 27;
-  const TOTAL = 36.1;
-  const MOTORWAY_JUNCTIONS = new Set([4, 12, 15, 18, 24]);
+  const R = window.M60; // shared with the static build: see render.js
+  const { N, MOTORWAY_JUNCTIONS, esc, nextOf, other, roadsOf } = R;
   const SPUR_TO = { M56: 'to the Airport', M602: 'to Salford', M61: 'to Bolton', M66: 'to Bury', M67: 'to Sheffield' };
   const LANDMARKS = ['Trafford Centre', 'Old Trafford', 'Etihad Stadium', 'Stockport Pyramid', 'Heaton Park'];
 
@@ -21,16 +20,9 @@
     get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable */ } },
   };
-  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-  const wrapN = (n) => ((n - 1 + N) % N) + 1;
-  const nextOf = (n, dir) => (dir === 'cw' ? wrapN(n + 1) : wrapN(n - 1));
-  const other = (dir) => (dir === 'cw' ? 'acw' : 'cw');
   const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const roadsOf = (j) => {
-    const s = new Set();
-    [...(j.cw || []), ...(j.acw || [])].forEach((r) => r[0].split(' ').forEach((t) => s.add(t.replace(/^\((.*)\)$/, '$1'))));
-    return [...s].filter((t) => t !== 'M6');
-  };
+  // a plain click on a link we handle in place; modified clicks still open the page
+  const plainClick = (e) => !(e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button > 0);
 
   /* ---------- state ---------- */
   const prefs = store.get('m60.prefs', {});
@@ -68,10 +60,6 @@
     return pts;
   }
   const ptsD = (pts) => 'M' + pts.map((p) => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join('L');
-  const milesBetween = (from, to, dir) => {
-    const a = J[from - 1].mi, b = J[to - 1].mi;
-    return dir === 'cw' ? (b - a + TOTAL) % TOTAL : (a - b + TOTAL) % TOTAL;
-  };
 
   /* ---------- build the map ---------- */
   const svg = $('#map');
@@ -276,71 +264,26 @@
   }
 
   /* ---------- rendering ---------- */
-  const icon = {
-    cw: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.2 10A6.2 6.2 0 1 1 13.4 4.8"/><path d="M13.8 1.8v3.4h-3.4"/></svg>',
-    acw: '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.8 10A6.2 6.2 0 1 0 6.6 4.8"/><path d="M6.2 1.8v3.4h3.4"/></svg>',
-  };
-  const chipsHTML = (road) => road.split(' ').map((t) => `<span class="chip${/^\(?M\d|\(M\)/.test(t) ? ' m' : ''}">${esc(t)}</span>`).join('');
-  const dirWord = (d = S.dir) => (d === 'cw' ? 'clockwise' : 'anticlockwise');
+  // Each junction has its own page. On the site, choosing one updates the address to
+  // that page; elsewhere (such as a preview) it falls back to a #j18 style hash.
+  const rootMeta = document.querySelector('meta[name="site-root"]');
+  const SITE_ROOT = rootMeta && /^https?:$/.test(location.protocol) ? new URL(rootMeta.content || './', location.href) : null;
+  const rootPath = rootMeta ? rootMeta.content : '';
 
-  // an opened junction: where the signs send you, how far to the next one, and a note
-  function detailHTML(j) {
-    const rows = j[S.dir], nx = nextOf(j.n, S.dir), w = dirWord();
-    const signs = rows
-      ? `<p class="eyebrow">Leaving ${w}, signed for</p>` +
-        rows.map((r) => `<div class="sign-row"><span class="chips">${chipsHTML(r[0])}</span><span class="places">${esc(r[1])}</span></div>`).join('')
-      : `<p class="no-exit">No exit ${w}.<span>Only a slip road joins here. Stay on for J${nx}, or use this junction travelling ${dirWord(other(S.dir))}.</span></p>`;
-    const exit = (ok, d) => `<span class="${ok ? '' : 'no'}" title="${ok ? 'Exit' : 'No exit'} ${dirWord(d)}">${icon[d]}${d === 'cw' ? 'Clockwise' : 'Anti'}</span>`;
-    return `
-      <div class="jbody">
-        <div class="signs">${signs}</div>
-        <dl class="facts">
-          <div><dt>Mile</dt><dd>${j.mi.toFixed(1)} <small>of 36.1</small></dd></div>
-          <div><dt>Next ${S.dir === 'cw' ? '↻' : '↺'}</dt><dd>J${nx} <small>in ${milesBetween(j.n, nx, S.dir).toFixed(1)} mi</small></dd></div>
-          <div><dt>Exits</dt><dd class="exits">${exit(!!j.cw, 'cw')}${exit(!!j.acw, 'acw')}</dd></div>
-        </dl>
-        <p class="note">${esc(j.note)}</p>
-      </div>`;
-  }
-
-  // The panel is the ring itself: every junction in order, grouped by stretch, with the chosen one open.
   function renderList() {
-    $('#list').innerHTML = window.STRETCHES.map((st) => `
-      <section class="stretch">
-        <h2 class="stretch-head"><span>${esc(st.name)}</span><span>${st.a}–${st.b}</span></h2>
-        ${J.slice(st.a - 1, st.b).map((j) => {
-          const open = j.n === S.sel;
-          return `
-          <article class="jitem${open ? ' open' : ''}" data-n="${j.n}">
-            <button type="button" class="jrow" aria-expanded="${open}">
-              <span class="num${MOTORWAY_JUNCTIONS.has(j.n) ? ' mw' : ''}">${j.n}</span>
-              <span class="where"><span class="place">${esc(j.loc)}</span>${open && j.name ? `<span class="aka">${esc(j.name)}</span>` : ''}</span>
-              <span class="roads">${roadsOf(j).join(' · ')}</span>
-            </button>
-            ${open ? detailHTML(j) : ''}
-          </article>`;
-        }).join('')}
-      </section>`).join('');
-    document.querySelectorAll('.jitem').forEach((it) => {
-      const n = +it.dataset.n;
-      it.querySelector('.jrow').onclick = () => pick(n);
-      it.onmouseenter = () => spot(n);
-      it.onmouseleave = () => spot(null);
-    });
+    $('#list').innerHTML = R.listHTML(J, window.STRETCHES, S.sel, S.dir, rootPath);
+    wireLinks('.jitem', (it) => +it.dataset.n, (it) => it.querySelector('.jrow'));
   }
-  // quirks under About; each junction number opens that junction
   function renderQuirks() {
-    $('#quirks').innerHTML = window.QUIRKS.map((q) => `
-      <li>
-        <p class="q-title">${esc(q.title)}</p>
-        <p class="q-text">${esc(q.text)}</p>
-        <p class="q-links">${q.js.map((n) => `<button type="button" class="jlink" data-n="${n}" aria-label="Show junction ${n}">J${n}</button>`).join('')}</p>
-      </li>`).join('');
-    document.querySelectorAll('.jlink').forEach((b) => {
-      const n = +b.dataset.n;
-      b.onclick = () => pick(n);
-      b.onmouseenter = () => spot(n);
-      b.onmouseleave = () => spot(null);
+    $('#quirks').innerHTML = R.quirksHTML(window.QUIRKS, rootPath);
+    wireLinks('.jlink', (a) => +a.dataset.n, (a) => a);
+  }
+  function wireLinks(sel, num, link) {
+    document.querySelectorAll(sel).forEach((el) => {
+      const n = num(el);
+      link(el).onclick = (e) => { if (plainClick(e)) { e.preventDefault(); pick(n); } };
+      el.onmouseenter = () => spot(n);
+      el.onmouseleave = () => spot(null);
     });
   }
 
@@ -381,7 +324,13 @@
   /* ---------- interactions ---------- */
   function select(n, reveal) {
     S.sel = n;
-    try { history.replaceState(null, '', '#j' + n); } catch (e) { /* not allowed here */ }
+    try {
+      if (SITE_ROOT) {
+        history.replaceState(null, '', new URL(R.junctionPath(n), SITE_ROOT).pathname);
+        document.title = `M60 Junction ${n}: ${J[n - 1].loc}`;
+      }
+      else history.replaceState(null, '', '#j' + n);
+    } catch (e) { /* not allowed here */ }
     render();
     if (reveal) ensureVisible(J[n - 1]);
   }
@@ -635,8 +584,16 @@
   syncScene();
 
   /* ---------- start ---------- */
+  // start on the junction this page is for, or one named in an old #j18 style link
   const hash = /^#j(\d{1,2})$/.exec(location.hash);
-  if (hash && +hash[1] >= 1 && +hash[1] <= N) S.sel = +hash[1];
+  const start = +document.body.dataset.junction || (hash ? +hash[1] : 1);
+  if (start >= 1 && start <= N) S.sel = start;
+  // ?card draws just the map and title, for the page's share image
+  if (/[?&]card\b/.test(location.search)) {
+    document.documentElement.classList.add('card');
+    S.panelHidden = true;
+    $('#stage').classList.add('panel-hidden');
+  }
   renderQuirks();
   FIT = fitView();
   view = { ...FIT };

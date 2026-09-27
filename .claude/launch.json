@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "m60-site",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8765", "--bind", "127.0.0.1"],
+      "runtimeExecutable": "sh",
+      "runtimeArgs": ["-c", "node scripts/build_site.mjs && python3 -m http.server 8765 --bind 127.0.0.1 --directory site"],
       "port": 8765
     }
   ]

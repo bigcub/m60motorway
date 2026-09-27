@@ -4,15 +4,16 @@ The artifact host supplies its own <html>, <head> and <body>, so this keeps the
 head's title, font links and scripts, inlines the stylesheet and scripts, and
 drops the outer document tags. Run from the repository root:
 
-    python3 scripts/build_artifact.py [output-path]
+    node scripts/build_site.mjs && python3 scripts/build_artifact.py [output-path]
 
-The default output is .artifact/index.html, which git ignores.
+It bundles the built home page in site/. The default output is .artifact/index.html,
+which git ignores.
 """
 import os
 import re
 import sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'site')
 
 
 def read(rel):
@@ -22,7 +23,7 @@ def read(rel):
 
 html = read('index.html')
 head = re.search(r'<head>(.*?)</head>', html, re.S).group(1)
-body = re.search(r'<body>(.*?)</body>', html, re.S).group(1)
+body = re.search(r'<body[^>]*>(.*?)</body>', html, re.S).group(1)
 
 # keep the title, fonts and the theme boot script from the head; the host provides the meta tags
 keep = [re.search(r'<title>.*?</title>', head, re.S).group(0)]
@@ -33,7 +34,7 @@ keep += re.findall(r'<script>.*?</script>', head, re.S)
 
 body = re.sub(r'<script src="([^"]+)"></script>', lambda m: '<script>\n' + read(m.group(1)) + '\n</script>', body)
 
-out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, '.artifact', 'index.html')
+out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, '..', '.artifact', 'index.html')
 os.makedirs(os.path.dirname(out), exist_ok=True)
 with open(out, 'w') as f:
     f.write('\n'.join(keep) + '\n' + body)
