@@ -63,7 +63,7 @@
           <article class="jitem${open ? ' open' : ''}" data-n="${j.n}">
             <a class="jrow" href="${rootPath}${junctionPath(j.n)}" aria-expanded="${open}" aria-label="Junction ${j.n}, ${esc(j.loc)}">
               <span class="num${MOTORWAY_JUNCTIONS.has(j.n) ? ' mw' : ''}">${j.n}</span>
-              <span class="where"><span class="place">${esc(j.loc)}</span>${open && j.name ? `<span class="aka">${esc(j.name)}</span>` : ''}</span>
+              <span class="where"><span class="place">${esc(j.loc)}</span>${open && (j.name || j.town) ? `<span class="aka">${esc([j.name, j.town].filter(Boolean).join(' · '))}</span>` : ''}</span>
               <span class="roads">${roadsOf(j).join(' · ')}</span>
             </a>
             ${open ? detailHTML(J, j, dir) : ''}
@@ -82,8 +82,11 @@
       </li>`).join('');
   }
 
+  // a label without its road in brackets, for page titles that list the roads anyway
+  const placeOf = (j) => j.loc.replace(/ \(.*\)$/, '');
+
   // the text of one direction's signs, for page descriptions
   const signsText = (rows) => (rows ? rows.map((r) => `${r[0].replace(/[()]/g, '')} ${r[1]}`).join('; ') : 'no exit');
 
-  root.M60 = { N, TOTAL, MOTORWAY_JUNCTIONS, esc, wrapN, nextOf, other, dirWord, junctionPath, roadsOf, milesBetween, detailHTML, listHTML, quirksHTML, signsText };
+  root.M60 = { N, TOTAL, MOTORWAY_JUNCTIONS, esc, wrapN, nextOf, other, dirWord, junctionPath, roadsOf, milesBetween, detailHTML, listHTML, quirksHTML, signsText, placeOf };
 })(typeof window !== 'undefined' ? window : globalThis);

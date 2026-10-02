@@ -1,4 +1,7 @@
 // What each junction is and where it goes.
+// loc is the label in the list and on the map. Where several junctions share a
+// town, the more local place (or the road, where there is no such place) tells
+// them apart, and town keeps the wider area.
 // cw / acw are the destinations on the exit signs for each direction; null means
 // there is no exit that way. Sources: the Wikipedia junction list (driver
 // location signs) and OpenStreetMap junction names.
@@ -6,10 +9,10 @@ window.JUNCTIONS = [
   { n: 1, loc: 'Stockport', name: 'Pyramid Roundabout',
     cw: [['A5145', 'Stockport (West)']], acw: [['A5145', 'Stockport (West & Centre)']],
     note: 'The blue glass Stockport Pyramid stands beside this junction. The numbering starts here and counts up clockwise.' },
-  { n: 2, loc: 'Cheadle',
+  { n: 2, loc: 'Cheadle', name: 'Roscoes Roundabout',
     cw: null, acw: [['A560', 'Cheadle']],
     note: 'A half junction. You can only leave here travelling anticlockwise.' },
-  { n: 3, loc: 'Cheadle', name: 'Kingsway Interchange',
+  { n: 3, loc: 'Cheadle (A34)', town: 'Cheadle', name: 'Kingsway Interchange',
     cw: [['A34', 'Cheadle, Wilmslow']], acw: [['A34', 'Cheadle, Wilmslow']],
     note: 'The A34 Kingsway. J3 and J4 are knotted together into one big interchange at Gatley.' },
   { n: 4, loc: 'Gatley', name: 'Kingsway Interchange',
@@ -27,13 +30,13 @@ window.JUNCTIONS = [
   { n: 8, loc: 'Carrington', name: 'Carrington Interchange',
     cw: [['A6144', 'Carrington']], acw: [['A6144', 'Carrington']],
     note: 'The Carrington spur. Variable speed limits run from here round to J18.' },
-  { n: 9, loc: 'Urmston', name: 'Lostock',
+  { n: 9, loc: 'Lostock', town: 'Urmston', name: 'Lostock Circle',
     cw: [['B5158', 'Urmston'], ['A5081', 'Trafford Park']], acw: [['A5081', 'Trafford Park, Trafford Centre']],
     note: 'Parkway into Trafford Park. J9 and J10 both serve the Trafford Centre.' },
-  { n: 10, loc: 'Urmston', name: 'Redclyffe',
+  { n: 10, loc: 'Urmston', name: 'Redclyffe Circle',
     cw: [['B5214', 'Trafford Park']], acw: [['B5214', 'Trafford Park, Urmston']],
     note: 'Right beside the Trafford Centre. Clockwise, the Barton High Level Bridge over the Ship Canal comes next.' },
-  { n: 11, loc: 'Eccles', name: 'Peel Green Interchange',
+  { n: 11, loc: 'Peel Green', town: 'Eccles', name: 'Peel Green Interchange',
     cw: [['A57', 'Irlam, Eccles']], acw: [['A57', 'Eccles, Irlam']],
     note: 'Just north of the Barton High Level Bridge over the Manchester Ship Canal.' },
   { n: 12, loc: 'Eccles', name: 'Eccles Interchange',
@@ -42,10 +45,10 @@ window.JUNCTIONS = [
   { n: 13, loc: 'Worsley & Swinton', name: 'Worsley Interchange',
     cw: [['A575', 'Worsley, Leigh'], ['A572', 'Swinton']], acw: [['A572', 'Swinton'], ['A575', 'Worsley']],
     note: 'Worsley and Swinton, where the ring turns north-east.' },
-  { n: 14, loc: 'Worsley', name: 'Wardley Interchange',
+  { n: 14, loc: 'Wardley', town: 'Worsley', name: 'Worsley Braided Interchange',
     cw: null, acw: [['A580', 'St Helens, Leigh']],
     note: 'The A580 East Lancashire Road. You can only leave here travelling anticlockwise.' },
-  { n: 15, loc: 'Worsley',
+  { n: 15, loc: 'Worsley (M61)', town: 'Worsley', name: 'Worsley Braided Interchange',
     cw: [['M61', 'Preston, Wigan, Bolton']], acw: [['M61', 'Preston, Wigan, Bolton'], ['(M6)', 'The North']],
     note: 'The M61 north to Bolton and Preston.' },
   { n: 16, loc: 'Clifton', name: 'Clifton Junction',
@@ -60,7 +63,7 @@ window.JUNCTIONS = [
   { n: 19, loc: 'Middleton', name: 'Rhodes Interchange',
     cw: [['A576', 'Manchester (C), Middleton']], acw: [['A576', 'Middleton']],
     note: 'J19 to J23 was the last stretch built. It opened in October 2000 and closed the ring.' },
-  { n: 20, loc: 'Middleton', name: 'Alkrington Interchange',
+  { n: 20, loc: 'Alkrington', town: 'Middleton', name: 'Alkrington Interchange',
     cw: [['A664', 'Middleton, Blackley']], acw: null,
     note: 'A half junction. You can only leave here travelling clockwise.' },
   { n: 21, loc: 'Chadderton', name: 'Broadway Interchange',
@@ -78,10 +81,10 @@ window.JUNCTIONS = [
   { n: 25, loc: 'Bredbury', name: 'Bredbury Interchange',
     cw: [['A560', 'Bredbury']], acw: [['A560', 'Bredbury']],
     note: 'J25, J26 and J27 come thick and fast on the run back into Stockport.' },
-  { n: 26, loc: 'Stockport',
+  { n: 26, loc: 'Stockport (A560)', town: 'Stockport', name: 'Scissors Crossover',
     cw: [['A560', 'Stockport (East & Centre)']], acw: null,
     note: 'A half junction. You can only leave here travelling clockwise.' },
-  { n: 27, loc: 'Stockport', name: 'Portwood Roundabout',
+  { n: 27, loc: 'Portwood', town: 'Stockport', name: 'Portwood Roundabout',
     cw: null, acw: [['A560', 'Stockport (East)']],
     note: 'Portwood. You can only leave here travelling anticlockwise. Carry on clockwise and you are back at J1.' },
 ];

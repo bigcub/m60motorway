@@ -67,8 +67,8 @@ for (const j of J) {
     ROOT: '../',
     JUNCTION: String(j.n),
     // the islands are better known by name than by town
-    TITLE: `M60 Junction ${j.n}: ${/Island/.test(j.name || '') ? j.name : j.loc} (${roads})`,
-    DESCRIPTION: `M60 junction ${j.n}${j.name ? `, ${j.name},` : ''} at ${j.loc}. ${side('cw')} ${side('acw')} Mile ${j.mi.toFixed(1)} of 36.1 from J1.`,
+    TITLE: `M60 Junction ${j.n}: ${/Island/.test(j.name || '') ? j.name : M60.placeOf(j)} (${roads})`,
+    DESCRIPTION: `M60 junction ${j.n}${j.name ? `, ${j.name},` : ''} at ${M60.placeOf(j)}${j.town && j.town !== M60.placeOf(j) ? `, ${j.town}` : ''}. ${side('cw')} ${side('acw')} Mile ${j.mi.toFixed(1)} of 36.1 from J1.`,
     URL: url,
     H1_MORE: `: junction ${j.n}, ${j.loc}`,
     JSONLD: json({
