@@ -55,6 +55,14 @@ Google Analytics (GA4, `G-Y6TC9407P5`) is in the `<head>` of `src/page.html`, so
 every built page has it. It loads only when the page is served from
 m60motorway.com, so local previews and the artifact never reach the reports.
 
+## Junction labels
+
+Each junction is labelled by what you would leave there for, taken from the
+destinations on its signs (J4 "Manchester Airport", J15 "Bolton & Preston"),
+not by the town it sits in. Where it physically is goes in `town`, shown under
+the label when the junction is open. Labels must stay unique. Page titles use the
+label, except Simister Island and Denton Island, which are searched for by name.
+
 ## Facts
 
 Junction facts come from the Wikipedia junction list (driver location signs) and
