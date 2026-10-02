@@ -82,7 +82,8 @@ for (const j of J) {
   }));
 }
 
-for (const f of ['styles.css', 'script.js', 'render.js', 'favicon.svg', 'og.png', 'CNAME']) {
+const ASSETS = ['styles.css', 'script.js', 'render.js', 'og.png', 'CNAME', 'favicon.svg', 'favicon.ico', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'site.webmanifest'];
+for (const f of ASSETS) {
   if (existsSync(join(ROOT, 'src', f))) copyFileSync(join(ROOT, 'src', f), join(OUT, f));
 }
 mkdirSync(join(OUT, 'data'));

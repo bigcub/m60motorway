@@ -28,6 +28,7 @@ Then open <http://localhost:8765>. Rebuild after editing anything in `src/` or `
 | `src/script.js` | The map, pan and zoom, the junction list, About, and Drive the loop. |
 | `src/render.js` | Builds the list and "Good to know" HTML. Shared by the browser and the build. |
 | `src/og.png` | The share image (1200×630), taken from `/?card`. |
+| `src/favicon.*`, `src/apple-touch-icon.png`, `src/icon-*.png`, `src/site.webmanifest` | The icons and web manifest. The PNGs and `.ico` come from `scripts/make_icons.py`. |
 | `data/junctions.js` | Junction content: places, sign destinations, notes, stretches and "Good to know". Edit this to change the words. |
 | `data/geo.js` | Generated map geometry. Do not edit by hand. |
 | `scripts/build_site.mjs` | Builds `site/`: the home page, 27 junction pages, a 404 page, `sitemap.xml` and `robots.txt`. |

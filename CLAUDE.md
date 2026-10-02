@@ -14,6 +14,7 @@ page; only the map data is generated.
 - `scripts/build_site.mjs` builds `site/` (git-ignored): the home page, a page per junction at `/junction-N/`, a 404 page, `sitemap.xml` and `robots.txt`. Each page has its own title, description, canonical URL and structured data, and the junction list written into the HTML.
 - `.github/workflows/pages.yml` builds and deploys `site/` to GitHub Pages on every push to `main`. The custom domain, m60motorway.com, is set in the repository's Pages settings.
 - `scripts/build_artifact.py` bundles the built home page into one file for a Claude artifact preview.
+- The icons (`src/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`) all draw the same mark as the page title: the ring in dusk rose with a gold dot at J1. Regenerate the PNGs and `.ico` with `python3 scripts/make_icons.py`; new assets in `src/` must be added to the `ASSETS` list in the build.
 
 ## Search
 
