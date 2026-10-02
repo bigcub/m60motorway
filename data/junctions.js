@@ -1,7 +1,8 @@
 // What each junction is and where it goes.
 // loc is the label in the list and on the map. Where several junctions share a
 // town, the more local place (or the road, where there is no such place) tells
-// them apart, and town keeps the wider area.
+// them apart, and town keeps the wider area. byDestination marks a junction known
+// by where it takes you rather than where it is, such as the M61 at J15.
 // cw / acw are the destinations on the exit signs for each direction; null means
 // there is no exit that way. Sources: the Wikipedia junction list (driver
 // location signs) and OpenStreetMap junction names.
@@ -48,7 +49,7 @@ window.JUNCTIONS = [
   { n: 14, loc: 'Wardley', town: 'Worsley', name: 'Worsley Braided Interchange',
     cw: null, acw: [['A580', 'St Helens, Leigh']],
     note: 'The A580 East Lancashire Road. You can only leave here travelling anticlockwise.' },
-  { n: 15, loc: 'Worsley (M61)', town: 'Worsley', name: 'Worsley Braided Interchange',
+  { n: 15, loc: 'Bolton & Preston', town: 'Worsley', byDestination: true, name: 'Worsley Braided Interchange',
     cw: [['M61', 'Preston, Wigan, Bolton']], acw: [['M61', 'Preston, Wigan, Bolton'], ['(M6)', 'The North']],
     note: 'The M61 north to Bolton and Preston.' },
   { n: 16, loc: 'Clifton', name: 'Clifton Junction',
