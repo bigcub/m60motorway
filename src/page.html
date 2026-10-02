@@ -3,6 +3,19 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- Google tag (gtag.js). Loads only on the live domain, so local previews stay out of the reports. -->
+    <script>
+      if (location.hostname === "m60motorway.com" || location.hostname === "www.m60motorway.com") {
+        const ga = document.createElement("script");
+        ga.async = true;
+        ga.src = "https://www.googletagmanager.com/gtag/js?id=G-Y6TC9407P5";
+        document.head.appendChild(ga);
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = function () { dataLayer.push(arguments); };
+        gtag("js", new Date());
+        gtag("config", "G-Y6TC9407P5");
+      }
+    </script>
     <title>{{TITLE}}</title>
     <meta name="description" content="{{DESCRIPTION}}" />
     <meta name="site-root" content="{{ROOT}}" />

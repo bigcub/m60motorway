@@ -48,6 +48,12 @@ by scaling them with the map's units-per-pixel on every layout. Tokens are pushe
 apart by a small relaxation so none overlap; labels that would collide with a
 token, a tag or the road are hidden rather than moved.
 
+## Analytics
+
+Google Analytics (GA4, `G-Y6TC9407P5`) is in the `<head>` of `src/page.html`, so
+every built page has it. It loads only when the page is served from
+m60motorway.com, so local previews and the artifact never reach the reports.
+
 ## Facts
 
 Junction facts come from the Wikipedia junction list (driver location signs) and
