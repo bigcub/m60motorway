@@ -226,6 +226,7 @@ a { color: inherit; }
 }
 .tip b { font: 500 0.9rem var(--display); margin-right: 4px; }
 .tip span { color: var(--muted); }
+.tip .aka { display: block; margin-top: 1px; font: italic 400 0.8rem/1.35 var(--display); }
 
 /* ---------- map drawing ---------- */
 .water { fill: none; stroke: var(--water); stroke-linecap: round; stroke-linejoin: round; stroke-width: calc(var(--k) * 1.5px); }
