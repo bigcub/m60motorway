@@ -387,7 +387,8 @@
   function showTip(j) {
     const wrap = $('#mapwrap').getBoundingClientRect(), r = svg.getBoundingClientRect(), k = unitsPerPx();
     const offX = (r.width - view.w / k) / 2, offY = (r.height - view.h / k) / 2;
-    tip.innerHTML = `<b>J${j.n}</b> ${esc(j.loc)} <span>· ${roadsOf(j).join(', ')}</span>`;
+    const aka = [j.name, j.town].filter(Boolean).join(' · ');
+    tip.innerHTML = `<b>J${j.n}</b> ${esc(j.loc)} <span>· ${roadsOf(j).join(', ')}</span>${aka ? `<span class="aka">${esc(aka)}</span>` : ''}`;
     tip.style.left = r.left - wrap.left + offX + (j.bx - view.x) / k + 'px';
     tip.style.top = r.top - wrap.top + offY + (j.by - view.y) / k + 'px';
     tip.hidden = false;
