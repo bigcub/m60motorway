@@ -6,6 +6,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import vm from 'node:vm';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -29,7 +30,8 @@ function page(v) {
     ...v,
     TITLE: M60.esc(v.TITLE),
     DESCRIPTION: M60.esc(v.DESCRIPTION),
-    LIST: M60.listHTML(J, STRETCHES, v.JUNCTION || 1, 'cw', v.ROOT),
+    H1_MORE: M60.esc(v.H1_MORE),
+    LIST: M60.listHTML(J, STRETCHES, Number(v.JUNCTION) || 1, 'cw', v.ROOT),
     QUIRKS: M60.quirksHTML(QUIRKS, v.ROOT),
   };
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => {
@@ -70,7 +72,7 @@ for (const j of J) {
     TITLE: `M60 Junction ${j.n}: ${/Island/.test(j.name || '') ? j.name : M60.placeOf(j)} (${roads})`,
     DESCRIPTION: `M60 junction ${j.n}${j.name ? `, ${j.name},` : ''} at ${j.byDestination ? j.town : M60.placeOf(j) + (j.town && j.town !== M60.placeOf(j) ? `, ${j.town}` : '')}. ${side('cw')} ${side('acw')} Mile ${j.mi.toFixed(1)} of 36.1 from J1.`,
     URL: url,
-    H1_MORE: `: junction ${j.n}, ${j.loc}`,
+    H1_MORE: `: junction ${j.n}, ${j.loc}${j.name ? ` (${j.name})` : ''}`,
     JSONLD: json({
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
@@ -89,11 +91,17 @@ for (const f of ASSETS) {
 mkdirSync(join(OUT, 'data'));
 for (const f of ['geo.js', 'junctions.js']) copyFileSync(join(ROOT, 'data', f), join(OUT, 'data', f));
 
-const today = new Date().toISOString().slice(0, 10);
+// lastmod is the date the pages' content last changed, not the build date, so
+// search engines can trust it. CI checks out the full history for this.
+const CONTENT = ['src/page.html', 'src/render.js', 'data/junctions.js', 'data/geo.js', 'scripts/build_site.mjs'];
+let lastmod = new Date().toISOString().slice(0, 10);
+try {
+  lastmod = execFileSync('git', ['log', '-1', '--format=%cs', '--', ...CONTENT], { cwd: ROOT, encoding: 'utf8' }).trim() || lastmod;
+} catch {}
 const urls = [ORIGIN, ...J.map((j) => ORIGIN + M60.junctionPath(j.n))];
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
+${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n')}
 </urlset>
 `);
 write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${ORIGIN}sitemap.xml\n`);
