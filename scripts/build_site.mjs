@@ -29,7 +29,8 @@ function page(v) {
     ...v,
     TITLE: M60.esc(v.TITLE),
     DESCRIPTION: M60.esc(v.DESCRIPTION),
-    LIST: M60.listHTML(J, STRETCHES, v.JUNCTION || 1, 'cw', v.ROOT),
+    H1_MORE: M60.esc(v.H1_MORE),
+    LIST: M60.listHTML(J, STRETCHES, Number(v.JUNCTION) || 1, 'cw', v.ROOT),
     QUIRKS: M60.quirksHTML(QUIRKS, v.ROOT),
   };
   return template.replace(/\{\{(\w+)\}\}/g, (_, k) => {
@@ -70,7 +71,7 @@ for (const j of J) {
     TITLE: `M60 Junction ${j.n}: ${/Island/.test(j.name || '') ? j.name : M60.placeOf(j)} (${roads})`,
     DESCRIPTION: `M60 junction ${j.n}${j.name ? `, ${j.name},` : ''} at ${j.byDestination ? j.town : M60.placeOf(j) + (j.town && j.town !== M60.placeOf(j) ? `, ${j.town}` : '')}. ${side('cw')} ${side('acw')} Mile ${j.mi.toFixed(1)} of 36.1 from J1.`,
     URL: url,
-    H1_MORE: `: junction ${j.n}, ${j.loc}`,
+    H1_MORE: `: junction ${j.n}, ${j.loc}${j.name ? ` (${j.name})` : ''}`,
     JSONLD: json({
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
