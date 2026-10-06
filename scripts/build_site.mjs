@@ -6,6 +6,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import vm from 'node:vm';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -90,11 +91,17 @@ for (const f of ASSETS) {
 mkdirSync(join(OUT, 'data'));
 for (const f of ['geo.js', 'junctions.js']) copyFileSync(join(ROOT, 'data', f), join(OUT, 'data', f));
 
-const today = new Date().toISOString().slice(0, 10);
+// lastmod is the date the pages' content last changed, not the build date, so
+// search engines can trust it. CI checks out the full history for this.
+const CONTENT = ['src/page.html', 'src/render.js', 'data/junctions.js', 'data/geo.js', 'scripts/build_site.mjs'];
+let lastmod = new Date().toISOString().slice(0, 10);
+try {
+  lastmod = execFileSync('git', ['log', '-1', '--format=%cs', '--', ...CONTENT], { cwd: ROOT, encoding: 'utf8' }).trim() || lastmod;
+} catch {}
 const urls = [ORIGIN, ...J.map((j) => ORIGIN + M60.junctionPath(j.n))];
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
+${urls.map((u) => `  <url><loc>${u}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n')}
 </urlset>
 `);
 write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${ORIGIN}sitemap.xml\n`);
