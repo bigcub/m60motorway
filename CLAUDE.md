@@ -16,7 +16,7 @@ page; only the map data is generated.
 - `scripts/build_artifact.py` bundles the built home page into one file for a Claude artifact preview.
 - The icons (`src/favicon.svg`, `favicon.ico`, `apple-touch-icon.png`, `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`) all draw the same mark as the page title: the ring in dusk rose with a gold dot at J1. Regenerate the PNGs and `.ico` with `python3 scripts/make_icons.py`; new assets in `src/` must be added to the `ASSETS` list in the build.
 
-- `scripts/make_merch.mjs` draws the merch artwork into `merch/`: the ring map and stacked junction names (OH / SIMISTER / ISLAND, WORSLEY / BRAIDED / INTERCHANGE) as transparent print PNGs for shirts and 11oz mug wraps, in light and dark ink, plus `mockups.png`. It uses the site's palette and fonts and the map data from `data/geo.js`; the map artwork must keep its OpenStreetMap credit. It is not part of the site build.
+- `scripts/make_merch.mjs` draws the merch artwork into `merch/`: the ring map and stacked junction names (OH / SIMISTER / ISLAND, WORSLEY / BRAIDED / INTERCHANGE, each centred and left-aligned) as transparent print PNGs for shirts and 11oz mug wraps, in light and dark ink, plus `mockups.png`. It uses the site's palette and fonts and the map data from `data/geo.js`; the map artwork must keep its OpenStreetMap credit. It is not part of the site build.
 
 ## Search
 

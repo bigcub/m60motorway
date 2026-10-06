@@ -126,8 +126,8 @@ function markSVG(c, n, size) {
 }
 
 // One word per line, as said out loud, with the junction underneath.
-function wordsHTML(c, words, n, maxW, maxH) {
-  return `<div class="words" data-w="${maxW}" data-h="${maxH}" style="--s:1">
+function wordsHTML(c, words, n, maxW, maxH, align = 'center') {
+  return `<div class="words ${align}" data-w="${maxW}" data-h="${maxH}" style="--s:1">
     ${words.map((w, i) => `<div class="w${i === 0 ? ' first' : ''}">${w}</div>`).join('')}
     <div class="foot">${markSVG(c, n, 120)}<span>M60 · JUNCTION ${n}</span></div>
   </div>`;
@@ -139,6 +139,7 @@ function pageHTML(c, body, w, h) {
   .canvas { width: ${w}px; height: ${h}px; display: flex; align-items: center; justify-content: center; position: relative; }
   .canvas > svg { display: block; }
   .words { display: flex; flex-direction: column; align-items: center; color: ${c.ink}; font-family: Lora; font-weight: 600; line-height: 0.92; }
+  .words.left { align-items: flex-start; }
   .words .w { font-size: calc(var(--s) * 300px); letter-spacing: 0.01em; }
   .words .w.first { color: ${c.route}; font-style: italic; font-weight: 500; }
   .words .foot svg { width: calc(var(--s) * 120px); height: calc(var(--s) * 120px); }
@@ -152,15 +153,17 @@ const DESIGNS = [
   { id: 'ring-map', shirt: (c) => mapSVG(c).replace('<svg ', '<svg width="4100" '), mug: (c) => mapSVG(c, { title: false }).replace('<svg ', '<svg height="1040" ') },
   { id: 'oh-simister-island', words: ['OH', 'SIMISTER', 'ISLAND'], n: 18 },
   { id: 'worsley-braided-interchange', words: ['WORSLEY', 'BRAIDED', 'INTERCHANGE'], n: 14 },
+  { id: 'oh-simister-island-left', words: ['OH', 'SIMISTER', 'ISLAND'], n: 18, align: 'left' },
+  { id: 'worsley-braided-interchange-left', words: ['WORSLEY', 'BRAIDED', 'INTERCHANGE'], n: 14, align: 'left' },
 ];
 
 function shirtBody(d, c) {
   if (d.shirt) return d.shirt(c);
-  return wordsHTML(c, d.words, d.n, 3800, 4600);
+  return wordsHTML(c, d.words, d.n, 3800, 4600, d.align);
 }
 function mugSide(d, c) {
   if (d.mug) return d.mug(c);
-  return wordsHTML(c, d.words, d.n, 1000, 960);
+  return wordsHTML(c, d.words, d.n, 1000, 960, d.align);
 }
 
 rmSync(OUT, { recursive: true, force: true });
@@ -218,7 +221,7 @@ const tee = (fill) => `<svg viewBox="0 0 600 640" width="600" height="640" style
 const rel = (f) => pathToFileURL(f).href;
 const cards = DESIGNS.map((d) => {
   const L = made.find((m) => m.d === d && m.ink === 'light'), D = made.find((m) => m.d === d && m.ink === 'dark');
-  return `<section><h2>${d.words ? d.words.join(' ') : 'The M60 ring map'}</h2><div class="row">
+  return `<section><h2>${d.words ? d.words.join(' ') + (d.align === 'left' ? ', left-aligned' : '') : 'The M60 ring map'}</h2><div class="row">
     <div class="shirt">${tee('#efe7d6')}<img src="${rel(L.shirt)}" class="print"></div>
     <div class="shirt">${tee('#22303a')}<img src="${rel(D.shirt)}" class="print"></div>
     <div class="mugbox"><div class="mugbody"><img src="${rel(L.mug)}"></div><div class="handle"></div></div>
